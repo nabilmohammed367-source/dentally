@@ -27,10 +27,10 @@ export function Inbox() {
  const conversations = practice.conversations.filter(c => (channel === 'All channels' || c.channel === channel) && (status === 'All statuses' || c.status === status) && `${practice.patients.find(p => p.id === c.patientId)?.name} ${c.messages.map(m => m.text).join(' ')}`.toLowerCase().includes(query.toLowerCase()))
  const conversation = practice.conversations.find(c => c.id === selected)
  const patient = practice.patients.find(p => p.id === conversation?.patientId)
- function patch(recipe: (c: Conversation) => void, label: string) { update(p => { const c = p.conversations.find(c => c.id === selected); if (!c) throw new Error('Conversation not found.'); recipe(c); log(p, label, patient?.name ?? '') }, label) }
+ function patch(recipe: (c: Conversation) => void, label: string) { update(p => { const c = p.conversations.find(c => c.id === selected); if (!c) throw new Error('Conversation not found.'); recipe(c); if (c.status === 'Needs attention' && !p.approvals.some(a => a.conversationId === c.id && a.status === 'Pending')) p.approvals.unshift({ id: uid(), kind: 'urgent', title: 'Patient concern — staff review required', description: `${patient?.name ?? 'Patient'}: review this flagged conversation before replying. No diagnosis is provided.`, patientIds: [c.patientId], agentId: 'support', conversationId: c.id, status: 'Pending' }); log(p, label, patient?.name ?? '') }, label) }
  function send() {
   if (!reply.trim() || !conversation || conversation.status === 'Resolved') return
-  if (conversation.status === 'Agent handling' && !practice.agents.find(a => a.id === 'support')?.enabled) { update(() => { throw new Error('Milo is paused. Take over the conversation or enable the agent.') }); return }
+  if (conversation.status !== 'Staff handling' && !practice.agents.find(a => a.id === 'support')?.enabled) { update(() => { throw new Error('Milo is paused. Take over the conversation or enable the agent.') }); return }
   const text = reply.trim()
   patch(c => {
     const staff = c.status === 'Staff handling'

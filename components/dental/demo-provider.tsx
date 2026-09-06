@@ -8,12 +8,13 @@ import { storeSchema, type Practice, type Store } from '@/lib/demo/types'
 
 const STORAGE_KEY = 'dentalos-demo-v1'
 const initial = createStore()
-type DemoContextValue = { store: Store; practice: Practice; ready: boolean; update: (recipe: (p: Practice) => void, success?: string) => boolean; switchPractice: (id: string) => void; reset: () => void }
+type DemoContextValue = { store: Store; practice: Practice; ready: boolean; update: (recipe: (p: Practice) => void, success?: string) => boolean; switchPractice: (id: string) => void; reset: () => void; revision: number }
 const DemoContext = createContext<DemoContextValue | null>(null)
 export function DemoProvider({ children }: { children: ReactNode }) {
   const { data = initial, mutate } = useSWR<Store>('dentalos-demo', null, { fallbackData: initial, revalidateOnFocus: false })
   const current = useRef(data)
   const [ready, setReady] = useState(false)
+  const [revision, setRevision] = useState(0)
   const warned = useRef(false)
   function commit(next: Store) {
     current.current = next; void mutate(next, { revalidate: false })
@@ -38,6 +39,6 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     catch (error) { toast.error(error instanceof Error ? error.message : 'Unable to complete this action.'); return false }
   }
   function switchPractice(id: string) { if (current.current.practices.some(p => p.id === id)) commit({ ...current.current, activeId: id }) }
-  return <DemoContext.Provider value={{ store: data, practice: data.practices.find(p => p.id === data.activeId)!, ready, update, switchPractice, reset: () => { commit(createStore()); toast.success('All fictional practices have been reset.') } }}>{children}</DemoContext.Provider>
+  return <DemoContext.Provider value={{ store: data, practice: data.practices.find(p => p.id === data.activeId)!, ready, update, switchPractice, revision, reset: () => { commit(createStore()); setRevision(v => v + 1); toast.success('All fictional practices have been reset.') } }}>{children}</DemoContext.Provider>
 }
 export function useDemo() { const context = useContext(DemoContext); if (!context) throw new Error('DemoProvider is required'); return context }

@@ -7,7 +7,7 @@ export function minutes(value: string) { const [h, m] = value.split(':').map(Num
 export function validateAppointment(p: Practice, a: Appointment) {
   if (!p.patients.some(v => v.id === a.patientId)) throw new Error('Choose a patient from this practice.')
   if (!providers.includes(a.provider) || !['Chair 1', 'Chair 2', 'Chair 3'].includes(a.chair) || !treatments.includes(a.treatment)) throw new Error('Choose a valid provider, chair and treatment.')
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(a.date) || Number.isNaN(Date.parse(a.date)) || a.date < DEMO_DATE) throw new Error('Choose a valid date on or after the demo date.')
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(a.date) || Number.isNaN(Date.parse(a.date)) || new Date(a.date).toISOString().slice(0, 10) !== a.date || a.date < DEMO_DATE) throw new Error('Choose a valid date on or after the demo date.')
   if ([0, 6].includes(new Date(a.date + 'T12:00:00Z').getUTCDay())) throw new Error('The practice is closed on weekends.')
   if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(a.time) || ![15, 30, 45, 60, 90].includes(a.duration)) throw new Error('Select a valid time and duration.')
   const start = minutes(a.time)

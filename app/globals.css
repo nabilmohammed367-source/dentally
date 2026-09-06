@@ -49,7 +49,7 @@
  .nav-item[data-active='true'] { @apply bg-sidebar-accent text-sidebar-foreground; box-shadow: inset 2px 0 0 var(--primary); }
  .panel-heading { @apply flex items-center justify-between; }
  .data-table { @apply w-full text-left text-sm; }
- .data-table th { @apply bg-muted/60 px-5 py-3 text-sm font-normal text-muted-foreground; }
+ .data-table th { @apply relative bg-muted/60 px-5 py-3 text-sm font-normal text-muted-foreground; }
  .data-table td { @apply border-t px-5 py-4; }
  .data-table tbody tr { @apply transition-colors hover:bg-muted/50; }
  .native-select { @apply w-full; }

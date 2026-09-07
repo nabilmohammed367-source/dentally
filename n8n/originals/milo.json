@@ -1,0 +1,1570 @@
+{
+  "name": "Milo — Patient Support (WhatsApp/Web)",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "7ca9529d-3d09-4393-8c02-cf9a9c3f5aa9",
+      "name": "Run Milo Demo",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "s1",
+              "name": "scenario_id",
+              "value": "booking_request",
+              "type": "string"
+            },
+            {
+              "id": "s2",
+              "name": "practice_id",
+              "value": "prac_oakwood",
+              "type": "string"
+            },
+            {
+              "id": "s3",
+              "name": "patient_id",
+              "value": "pat_prac_oakwood_3",
+              "type": "string"
+            },
+            {
+              "id": "s4",
+              "name": "message_text",
+              "value": "Hi, can I book a check-up for Tuesday afternoon?",
+              "type": "string"
+            },
+            {
+              "id": "s5",
+              "name": "preferred_date",
+              "value": "2026-09-08",
+              "type": "string"
+            },
+            {
+              "id": "s6",
+              "name": "preferred_time",
+              "value": "16:00",
+              "type": "string"
+            },
+            {
+              "id": "s7",
+              "name": "appointment_id",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ce762ae0-c3fd-4177-aba0-1b3dfbc8d81b",
+      "name": "Scenario Input",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "KC8u4siKTiTEmKOv"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "practice_id",
+              "keyValue": "={{ $json.practice_id }}"
+            }
+          ]
+        }
+      },
+      "id": "d41d8fc7-777e-4820-926a-b14f0ef77392",
+      "name": "Get Agents (Practice)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        448,
+        0
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all().map(function(i){ return i.json; });\nconst milo = rows.find(function(r){ return r.agent_id === 'support'; });\nreturn [{ json: { enabled: milo ? !!milo.enabled : false } }];"
+      },
+      "id": "e028ecde-5c3b-46fc-ada7-77140715ae6a",
+      "name": "Extract Milo Status",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.enabled }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "cbdc903c-6b1e-47d8-842e-32f227249b7d",
+      "name": "Milo Enabled?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        880,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $(\"Scenario Input\").item.json.scenario_id }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "rightValue": "opt_out"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "5c9ea951-3af9-41d1-8c31-c15889e8c8f4",
+      "name": "Is Opt-Out?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1152,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "eoIjMXL38XqJVtKs"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "patient_id",
+              "keyValue": "={{ $('Scenario Input').item.json.patient_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "consent_marketing": false
+          }
+        },
+        "options": {}
+      },
+      "id": "2f640109-cda8-46db-935c-fdfc24872d52",
+      "name": "Process Opt-Out",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1392,
+        -896
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "oo1",
+              "name": "response",
+              "value": "You've been unsubscribed from marketing messages. You'll still receive essential appointment-related messages.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4fe16349-f067-45d2-840c-c56b03cdd004",
+      "name": "Opt-Out Confirmed",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1632,
+        -896
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $(\"Scenario Input\").item.json.scenario_id }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "opening_hours"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $(\"Scenario Input\").item.json.scenario_id }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "pricing_faq"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $(\"Scenario Input\").item.json.scenario_id }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "booking_request"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $(\"Scenario Input\").item.json.scenario_id }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "appointment_change"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $(\"Scenario Input\").item.json.scenario_id }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "human_request"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $(\"Scenario Input\").item.json.scenario_id }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "clinical_concern"
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "Unknown"
+        }
+      },
+      "id": "95c02c08-01bc-4d2c-8f33-45f50012324a",
+      "name": "Route Scenario",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1392,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "mp1",
+              "name": "response",
+              "value": "Milo is currently paused for this practice. A staff member will respond shortly.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "dc5c825e-becc-4a7c-820c-8586549e11a8",
+      "name": "Milo Paused",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1152,
+        1408
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "oh1",
+              "name": "response",
+              "value": "We're open Monday to Friday, 9:00 to 17:00. Would you like to book an appointment?",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e763df80-a6b5-4c83-9e1b-0a3a0af1de3f",
+      "name": "Opening Hours Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1648,
+        -704
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "pf1",
+              "name": "response",
+              "value": "A routine check-up is around £60, and a cleaning is around £75 (fictional demo prices). Would you like to book one?",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4b8f53ad-c47b-4613-aec5-b7a820710243",
+      "name": "Pricing FAQ Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1648,
+        -496
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "2bAmrhgGbNIsh23J"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "practice_id",
+              "keyValue": "={{ $('Scenario Input').item.json.practice_id }}"
+            }
+          ]
+        }
+      },
+      "id": "8871439b-de78-4f60-a70a-ce8bb78ad673",
+      "name": "Get Appointments (Milo Booking)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1648,
+        0
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const scenario = $('Scenario Input').first().json;\nconst existing = $input.all().map(function(i) { return i.json; }).filter(function(r) { return r.appointment_id && r.status !== 'Cancelled'; });\nconst start = new Date(scenario.preferred_date + 'T' + scenario.preferred_time + ':00.000Z');\nconst end = new Date(start.getTime() + 30 * 60000);\nconst providers = ['Dr. Adeyemi', 'Dr. Novak'];\nconst chairs = ['Chair 1', 'Chair 2'];\nlet chosenProvider = null, chosenChair = null;\nfor (let p = 0; p < providers.length; p++) { for (let c = 0; c < chairs.length; c++) { const conflict = existing.some(function(r) { const rs = new Date(r.start_time); const re = new Date(r.end_time); const overlap = start < re && end > rs; return overlap && (r.provider === providers[p] || r.chair === chairs[c]); }); if (!conflict) { chosenProvider = providers[p]; chosenChair = chairs[c]; break; } } if (chosenProvider) break; }\nreturn [{ json: { available: !!chosenProvider, provider: chosenProvider, chair: chosenChair, start_time: start.toISOString(), end_time: end.toISOString() } }];"
+      },
+      "id": "0d44cf5a-2d31-4feb-934d-4a1fe57404d4",
+      "name": "Check Slot Free (Milo)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1888,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.available }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "7319e726-4db5-43d3-b096-ef59ae9fdd95",
+      "name": "Milo Slot Available?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2128,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const scenario = $('Scenario Input').first().json;\nconst slot = $json;\nreturn [{ json: { demo_session_id: 'demo1', appointment_id: 'appt_' + scenario.practice_id + '_' + Date.now(), practice_id: scenario.practice_id, patient_id: scenario.patient_id, provider: slot.provider, chair: slot.chair, treatment: 'Check-up', start_time: slot.start_time, end_time: slot.end_time, status: 'Confirmed', version: 1 } }];"
+      },
+      "id": "442536c1-e19c-4bf2-8662-9d224472ba1f",
+      "name": "Build Milo Appointment",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2368,
+        -96
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "2bAmrhgGbNIsh23J"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": []
+        },
+        "options": {}
+      },
+      "id": "d5fa19f5-b8ca-4096-b366-a8dfb9874705",
+      "name": "Insert Milo Appointment",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        2608,
+        -96
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "mbc1",
+              "name": "response",
+              "value": "={{ 'Great, your check-up is confirmed for ' + $('Build Milo Appointment').item.json.start_time + '.' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c7967925-5e8d-45c5-b3ce-18e7efdf48db",
+      "name": "Milo Booking Confirmed",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2848,
+        -96
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "mbc2",
+              "name": "response",
+              "value": "That exact time isn't free - let me connect you with Ava to find the next best slot.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2027485f-0c3f-42a1-9868-634ca0190924",
+      "name": "Milo Booking Conflict",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2368,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "2bAmrhgGbNIsh23J"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "appointment_id",
+              "keyValue": "={{ $('Scenario Input').item.json.appointment_id }}"
+            }
+          ]
+        }
+      },
+      "id": "389df60e-4915-476f-9286-30f58ff5e397",
+      "name": "Get Appointment (Change)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1648,
+        304
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.appointment_id }}",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "964028af-d043-4e92-b408-de14e68c83dc",
+      "name": "Appointment Found (Change)?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1888,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "2bAmrhgGbNIsh23J"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "appointment_id",
+              "keyValue": "={{ $('Get Appointment (Change)').item.json.appointment_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "status": "Cancelled"
+          }
+        },
+        "options": {}
+      },
+      "id": "7409598f-8787-413e-9419-0d7d099b5ba8",
+      "name": "Cancel Via Milo",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        2128,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "Wc59RmscYiM6P62q"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "demo_session_id": "demo1",
+            "event_id": "={{ \"evt_\" + $now.toMillis() }}",
+            "practice_id": "={{ $('Get Appointment (Change)').item.json.practice_id }}",
+            "type": "appointment.cancelled",
+            "description": "={{ 'Milo cancelled appointment ' + $('Get Appointment (Change)').item.json.appointment_id + ' via chat - slot released for Finn' }}",
+            "related_id": "={{ $('Get Appointment (Change)').item.json.appointment_id }}",
+            "created_at": "={{ $now.toISO() }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "7b66c106-ef30-4a5a-8bdb-b99e54a73778",
+      "name": "Log Cancel Event (Milo)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        2368,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "mcc1",
+              "name": "response",
+              "value": "Done - that appointment has been cancelled and the slot released to our waitlist.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "25f89f05-33b0-4d1e-8a01-4ee050ec1df6",
+      "name": "Milo Change Confirmed",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2608,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cnf1",
+              "name": "response",
+              "value": "I couldn't find that appointment - could you double check the appointment ID?",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "27384f90-4bcf-45ba-b422-645039080f50",
+      "name": "Change - Not Found",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2128,
+        464
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "MRKwUO4mxr4zBU0Q"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "practice_id",
+              "keyValue": "={{ $('Scenario Input').item.json.practice_id }}"
+            }
+          ]
+        }
+      },
+      "id": "eebebc15-3976-4297-9f96-489e3f8b4704",
+      "name": "Get Conversation (Human)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1648,
+        608
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const scenario = $('Scenario Input').first().json;\nconst rows = $input.all().map(function(i){ return i.json; }).filter(function(r){ return r.conversation_id; });\nconst existing = rows.find(function(r){ return r.patient_id === scenario.patient_id; });\nconst convId = existing ? existing.conversation_id : 'conv_' + scenario.practice_id + '_' + scenario.patient_id + '_' + Date.now();\nreturn [{ json: { conversation_id: convId, is_new: !existing } }];"
+      },
+      "id": "25ef0a1e-1d85-48df-8d55-e2195dbeff02",
+      "name": "Resolve Conversation ID (Human)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1888,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.is_new }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "374db49d-3168-473a-9a53-ba1ed9b71a15",
+      "name": "New Conversation? (Human)",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2128,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "MRKwUO4mxr4zBU0Q"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "demo_session_id": "demo1",
+            "conversation_id": "={{ $json.conversation_id }}",
+            "practice_id": "={{ $('Scenario Input').item.json.practice_id }}",
+            "patient_id": "={{ $('Scenario Input').item.json.patient_id }}",
+            "channel": "WhatsApp",
+            "status": "Needs attention",
+            "last_message": "={{ $('Scenario Input').item.json.message_text }}",
+            "assigned_to": "",
+            "updated_at": "={{ $now.toISO() }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "3b71282b-e110-4a02-815e-71456c6f04ef",
+      "name": "Insert New Conversation (Human)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        2368,
+        512
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "MRKwUO4mxr4zBU0Q"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "conversation_id",
+              "keyValue": "={{ $json.conversation_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "status": "Needs attention",
+            "last_message": "={{ $('Scenario Input').item.json.message_text }}",
+            "updated_at": "={{ $now.toISO() }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "dc416f84-c852-41ee-88e0-7521e65a9bdf",
+      "name": "Update Existing Conversation (Human)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        2368,
+        704
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "Wc59RmscYiM6P62q"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "demo_session_id": "demo1",
+            "event_id": "={{ \"evt_\" + $now.toMillis() }}",
+            "practice_id": "={{ $('Scenario Input').item.json.practice_id }}",
+            "type": "human_request",
+            "description": "Patient asked to speak with a staff member.",
+            "related_id": "={{ $('Resolve Conversation ID (Human)').item.json.conversation_id }}",
+            "created_at": "={{ $now.toISO() }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "bccfdad9-1b04-45bf-aa60-e50458e3cf73",
+      "name": "Log Human Request Task",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        2608,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "hr1",
+              "name": "response",
+              "value": "Of course - I've flagged this for our team and someone will get back to you shortly.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "585e5897-01c7-4293-9696-e8b309e6caad",
+      "name": "Human Request Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2848,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "MRKwUO4mxr4zBU0Q"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "practice_id",
+              "keyValue": "={{ $('Scenario Input').item.json.practice_id }}"
+            }
+          ]
+        }
+      },
+      "id": "50d1e7b6-d87d-43a4-96a1-19ba5d8e5ccd",
+      "name": "Get Conversation (Clinical)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1648,
+        912
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const scenario = $('Scenario Input').first().json;\nconst rows = $input.all().map(function(i){ return i.json; }).filter(function(r){ return r.conversation_id; });\nconst existing = rows.find(function(r){ return r.patient_id === scenario.patient_id; });\nconst convId = existing ? existing.conversation_id : 'conv_' + scenario.practice_id + '_' + scenario.patient_id + '_' + Date.now();\nreturn [{ json: { conversation_id: convId, is_new: !existing } }];"
+      },
+      "id": "cc891db0-cd66-4697-970a-bc3a52b40e4c",
+      "name": "Resolve Conversation ID (Clinical)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1888,
+        912
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.is_new }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "49ec0c75-f714-4f02-8236-24233074920c",
+      "name": "New Conversation? (Clinical)",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2128,
+        912
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "MRKwUO4mxr4zBU0Q"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "demo_session_id": "demo1",
+            "conversation_id": "={{ $json.conversation_id }}",
+            "practice_id": "={{ $('Scenario Input').item.json.practice_id }}",
+            "patient_id": "={{ $('Scenario Input').item.json.patient_id }}",
+            "channel": "WhatsApp",
+            "status": "Needs attention",
+            "last_message": "={{ $('Scenario Input').item.json.message_text }}",
+            "assigned_to": "",
+            "updated_at": "={{ $now.toISO() }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "aa017d41-38ae-411b-b73e-d7d3433ded76",
+      "name": "Insert New Conversation (Clinical)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        2368,
+        800
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "MRKwUO4mxr4zBU0Q"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "conversation_id",
+              "keyValue": "={{ $json.conversation_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "status": "Needs attention",
+            "last_message": "={{ $('Scenario Input').item.json.message_text }}",
+            "updated_at": "={{ $now.toISO() }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "288ca3e0-5df5-440c-8f36-4d81987fcdab",
+      "name": "Update Existing Conversation (Clinical)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        2368,
+        1008
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "Wc59RmscYiM6P62q"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "demo_session_id": "demo1",
+            "event_id": "={{ \"evt_\" + $now.toMillis() }}",
+            "practice_id": "={{ $('Scenario Input').item.json.practice_id }}",
+            "type": "clinical_escalation",
+            "description": "URGENT: Patient reported a clinical concern - needs immediate staff review. Unassigned.",
+            "related_id": "={{ $('Resolve Conversation ID (Clinical)').item.json.conversation_id }}",
+            "created_at": "={{ $now.toISO() }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "4baa2749-029e-46f8-84c9-f86948a16222",
+      "name": "Log Clinical Escalation Task",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        2608,
+        912
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cc1",
+              "name": "response",
+              "value": "I'm not able to give medical advice, but I've flagged this for our clinical team right away. If this is an emergency, please call emergency services or visit A&E.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b611eb99-6db6-4766-b541-ff64b735e351",
+      "name": "Clinical Concern Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2848,
+        912
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "uk1",
+              "name": "response",
+              "value": "I'm not sure about that one - for this demo I can show opening hours, pricing, booking, rescheduling, cancelling, or connecting you to a human.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "948cf191-5793-44b4-81ae-b378dadcafef",
+      "name": "Unknown Question Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1648,
+        -304
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Run Milo Demo": {
+      "main": [
+        [
+          {
+            "node": "Scenario Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scenario Input": {
+      "main": [
+        [
+          {
+            "node": "Get Agents (Practice)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Agents (Practice)": {
+      "main": [
+        [
+          {
+            "node": "Extract Milo Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Milo Status": {
+      "main": [
+        [
+          {
+            "node": "Milo Enabled?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Milo Enabled?": {
+      "main": [
+        [
+          {
+            "node": "Is Opt-Out?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Milo Paused",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Opt-Out?": {
+      "main": [
+        [
+          {
+            "node": "Process Opt-Out",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Route Scenario",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Opt-Out": {
+      "main": [
+        [
+          {
+            "node": "Opt-Out Confirmed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Scenario": {
+      "main": [
+        [
+          {
+            "node": "Opening Hours Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Pricing FAQ Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Appointments (Milo Booking)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Appointment (Change)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Conversation (Human)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Conversation (Clinical)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Unknown Question Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Appointments (Milo Booking)": {
+      "main": [
+        [
+          {
+            "node": "Check Slot Free (Milo)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Slot Free (Milo)": {
+      "main": [
+        [
+          {
+            "node": "Milo Slot Available?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Milo Slot Available?": {
+      "main": [
+        [
+          {
+            "node": "Build Milo Appointment",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Milo Booking Conflict",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Milo Appointment": {
+      "main": [
+        [
+          {
+            "node": "Insert Milo Appointment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Milo Appointment": {
+      "main": [
+        [
+          {
+            "node": "Milo Booking Confirmed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Appointment (Change)": {
+      "main": [
+        [
+          {
+            "node": "Appointment Found (Change)?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Appointment Found (Change)?": {
+      "main": [
+        [
+          {
+            "node": "Cancel Via Milo",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Change - Not Found",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cancel Via Milo": {
+      "main": [
+        [
+          {
+            "node": "Log Cancel Event (Milo)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Cancel Event (Milo)": {
+      "main": [
+        [
+          {
+            "node": "Milo Change Confirmed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Conversation (Human)": {
+      "main": [
+        [
+          {
+            "node": "Resolve Conversation ID (Human)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resolve Conversation ID (Human)": {
+      "main": [
+        [
+          {
+            "node": "New Conversation? (Human)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "New Conversation? (Human)": {
+      "main": [
+        [
+          {
+            "node": "Insert New Conversation (Human)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Log Human Request Task",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update Existing Conversation (Human)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Human Request Task": {
+      "main": [
+        [
+          {
+            "node": "Human Request Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Conversation (Clinical)": {
+      "main": [
+        [
+          {
+            "node": "Resolve Conversation ID (Clinical)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resolve Conversation ID (Clinical)": {
+      "main": [
+        [
+          {
+            "node": "New Conversation? (Clinical)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "New Conversation? (Clinical)": {
+      "main": [
+        [
+          {
+            "node": "Insert New Conversation (Clinical)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Log Clinical Escalation Task",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update Existing Conversation (Clinical)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Clinical Escalation Task": {
+      "main": [
+        [
+          {
+            "node": "Clinical Concern Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "versionId": "e60ddb35-cc35-493f-aa3e-b4a56ce910ef",
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp",
+    "instanceId": "82666a06905407f68d06c73658cdfa99b6326fd9e24f210de55bcbd7bb7bdcf0"
+  },
+  "nodeGroups": [],
+  "id": "xF0xrnGu2oVHjtQK",
+  "tags": []
+}

@@ -1,0 +1,1305 @@
+{
+  "name": "Ava — Receptionist (Booking, Reschedule, Cancel)",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "7b9ac6ad-9715-424b-8a89-ab47262d85c1",
+      "name": "Run Ava Demo",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a1",
+              "name": "action",
+              "value": "book",
+              "type": "string"
+            },
+            {
+              "id": "a2",
+              "name": "practice_id",
+              "value": "prac_oakwood",
+              "type": "string"
+            },
+            {
+              "id": "a3",
+              "name": "patient_id",
+              "value": "pat_prac_oakwood_1",
+              "type": "string"
+            },
+            {
+              "id": "a4",
+              "name": "treatment",
+              "value": "Check-up",
+              "type": "string"
+            },
+            {
+              "id": "a5",
+              "name": "preferred_date",
+              "value": "2026-09-08",
+              "type": "string"
+            },
+            {
+              "id": "a6",
+              "name": "preferred_time",
+              "value": "14:00",
+              "type": "string"
+            },
+            {
+              "id": "a7",
+              "name": "appointment_id",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "23cda4c2-4853-4d23-ac43-436920dff4e9",
+      "name": "Scenario Input",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "KC8u4siKTiTEmKOv"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "practice_id",
+              "keyValue": "={{ $json.practice_id }}"
+            }
+          ]
+        }
+      },
+      "id": "58cb1f19-74a0-4a42-b6c0-adfcdfc51123",
+      "name": "Get Agents (Practice)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        448,
+        0
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all().map(function(i){ return i.json; });\nconst ava = rows.find(function(r){ return r.agent_id === 'reception'; });\nreturn [{ json: { enabled: ava ? !!ava.enabled : false } }];"
+      },
+      "id": "b9f9a3e8-424c-4ae4-a8e2-a587f62c67d7",
+      "name": "Extract Ava Status",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.enabled }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "4b053b95-5f4f-47c4-9bff-9fad0fedecbf",
+      "name": "Ava Enabled?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        880,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $(\"Scenario Input\").item.json.action }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "availability"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $(\"Scenario Input\").item.json.action }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "book"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $(\"Scenario Input\").item.json.action }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "reschedule"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $(\"Scenario Input\").item.json.action }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "cancel"
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "Unsupported"
+        }
+      },
+      "id": "68d84298-b2b5-4894-b6a2-0866ac1f2590",
+      "name": "Route Action",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1152,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "p1",
+              "name": "response",
+              "value": "Ava is currently paused for this practice. A staff member will need to handle this request.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e53a3420-1daf-482d-8a42-cf92c778d67e",
+      "name": "Ava Paused",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1152,
+        1200
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "2bAmrhgGbNIsh23J"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "practice_id",
+              "keyValue": "={{ $(\"Scenario Input\").item.json.practice_id }}"
+            }
+          ]
+        }
+      },
+      "id": "3a7b45cd-2865-47ab-b211-76dce7ec9e64",
+      "name": "Get Appointments (Availability)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1392,
+        -800
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const scenario = $('Scenario Input').first().json;\nconst existing = $input.all().map(function(i) { return i.json; }).filter(function(r) { return r.appointment_id && r.status !== 'Cancelled'; });\nconst dateStr = scenario.preferred_date;\nconst busyTimes = {};\nexisting.forEach(function(r) {\n  const d = new Date(r.start_time);\n  const key = d.toISOString().slice(0, 10);\n  if (key === dateStr) {\n    const hhmm = ('0' + d.getUTCHours()).slice(-2) + ':' + ('0' + d.getUTCMinutes()).slice(-2);\n    busyTimes[hhmm] = true;\n  }\n});\nconst candidateTimes = ['09:00','09:30','10:00','10:30','11:00','13:00','13:30','14:00','14:30','15:00','15:30','16:00'];\nconst free = candidateTimes.filter(function(t) { return !busyTimes[t]; }).slice(0, 3);\nreturn [{ json: { practice_id: scenario.practice_id, preferred_date: dateStr, available_slots: free, response: free.length ? ('I can offer ' + free.join(' or ') + ' on ' + dateStr + '. Which works better?') : ('No slots available on ' + dateStr + ' - would you like to try another day?') } }];"
+      },
+      "id": "dec110e9-b1b8-49ae-8d3e-818e6fba6b3c",
+      "name": "Compute Availability",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1632,
+        -800
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "2bAmrhgGbNIsh23J"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "practice_id",
+              "keyValue": "={{ $(\"Scenario Input\").item.json.practice_id }}"
+            }
+          ]
+        }
+      },
+      "id": "35b93d20-09e4-4004-94c8-f4805d702d20",
+      "name": "Get Appointments (Booking Check)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1392,
+        -400
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const scenario = $('Scenario Input').first().json;\nconst existing = $input.all().map(function(i) { return i.json; }).filter(function(r) { return r.appointment_id && r.status !== 'Cancelled'; });\nconst startIso = scenario.preferred_date + 'T' + scenario.preferred_time + ':00.000Z';\nconst start = new Date(startIso);\nconst end = new Date(start.getTime() + 30 * 60000);\nconst providers = ['Dr. Adeyemi', 'Dr. Novak'];\nlet chosenProvider = null;\nlet chosenChair = null;\nconst chairs = ['Chair 1', 'Chair 2'];\nfor (let p = 0; p < providers.length; p++) {\n  for (let c = 0; c < chairs.length; c++) {\n    const conflict = existing.some(function(r) {\n      const rStart = new Date(r.start_time);\n      const rEnd = new Date(r.end_time);\n      const overlaps = start < rEnd && end > rStart;\n      return overlaps && (r.provider === providers[p] || r.chair === chairs[c]);\n    });\n    if (!conflict) { chosenProvider = providers[p]; chosenChair = chairs[c]; break; }\n  }\n  if (chosenProvider) break;\n}\nconst available = !!chosenProvider;\nreturn [{ json: { available: available, provider: chosenProvider, chair: chosenChair, start_time: start.toISOString(), end_time: end.toISOString() } }];"
+      },
+      "id": "de4f96f9-a5fb-4899-b6f2-7f22e7ff1eab",
+      "name": "Check Slot Free",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1632,
+        -400
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.available }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "4613f306-3e59-4573-aae0-cacdad268410",
+      "name": "Slot Available?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1872,
+        -400
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const scenario = $('Scenario Input').first().json;\nconst slot = $json;\nconst apptId = 'appt_' + scenario.practice_id + '_' + Date.now();\nreturn [{ json: { demo_session_id: 'demo1', appointment_id: apptId, practice_id: scenario.practice_id, patient_id: scenario.patient_id, provider: slot.provider, chair: slot.chair, treatment: scenario.treatment, start_time: slot.start_time, end_time: slot.end_time, status: 'Confirmed', version: 1 } }];"
+      },
+      "id": "8d265c62-09f4-4b0f-ae21-e17958b9a0e2",
+      "name": "Build New Appointment",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2112,
+        -496
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "2bAmrhgGbNIsh23J"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": []
+        },
+        "options": {}
+      },
+      "id": "981ceded-ea56-46cd-83a7-507b061b65b0",
+      "name": "Insert New Appointment",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        2352,
+        -496
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "Wc59RmscYiM6P62q"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "demo_session_id": "demo1",
+            "event_id": "={{ \"evt_\" + $now.toMillis() }}",
+            "practice_id": "={{ $('Build New Appointment').item.json.practice_id }}",
+            "type": "appointment.created",
+            "description": "={{ 'Ava booked ' + $('Build New Appointment').item.json.treatment + ' for ' + $('Build New Appointment').item.json.patient_id }}",
+            "related_id": "={{ $('Build New Appointment').item.json.appointment_id }}",
+            "created_at": "={{ $now.toISO() }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "43d1326d-5c13-43f9-9bdd-5f2520c58502",
+      "name": "Log Booking Activity",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        2592,
+        -496
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "bc1",
+              "name": "response",
+              "value": "={{ 'Your demo appointment is confirmed for ' + $('Build New Appointment').item.json.start_time + ' with ' + $('Build New Appointment').item.json.provider + '.' }}",
+              "type": "string"
+            },
+            {
+              "id": "bc2",
+              "name": "appointment_id",
+              "value": "={{ $('Build New Appointment').item.json.appointment_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f950496c-53d0-46f5-9954-0718108b286c",
+      "name": "Booking Confirmed",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2832,
+        -496
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ca1",
+              "name": "response",
+              "value": "That slot is no longer available. Would you like me to check other times on the same day, or a different day?",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b2a97af4-5724-4214-856d-053e137390ba",
+      "name": "Booking Conflict Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2112,
+        -256
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "2bAmrhgGbNIsh23J"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "appointment_id",
+              "keyValue": "={{ $(\"Scenario Input\").item.json.appointment_id }}"
+            }
+          ]
+        }
+      },
+      "id": "9c1c227b-9c83-4272-993c-0cccd87daacf",
+      "name": "Get Appointment To Reschedule",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1392,
+        0
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.appointment_id }}",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "982658a9-9c00-49ad-8002-2b3f59402708",
+      "name": "Original Appointment Found?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1632,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "2bAmrhgGbNIsh23J"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "practice_id",
+              "keyValue": "={{ $('Get Appointment To Reschedule').item.json.practice_id }}"
+            }
+          ]
+        }
+      },
+      "id": "e9c7f12e-ad40-4b01-9ac7-dead837aeffc",
+      "name": "Get Appointments (Reschedule Check)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1872,
+        -48
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const scenario = $('Scenario Input').first().json;\nconst original = $('Get Appointment To Reschedule').first().json;\nconst existing = $input.all().map(function(i) { return i.json; }).filter(function(r) { return r.appointment_id && r.appointment_id !== original.appointment_id && r.status !== 'Cancelled'; });\nconst startIso = scenario.preferred_date + 'T' + scenario.preferred_time + ':00.000Z';\nconst start = new Date(startIso);\nconst end = new Date(start.getTime() + 30 * 60000);\nconst conflict = existing.some(function(r) {\n  const rStart = new Date(r.start_time);\n  const rEnd = new Date(r.end_time);\n  const overlaps = start < rEnd && end > rStart;\n  return overlaps && (r.provider === original.provider || r.chair === original.chair);\n});\nreturn [{ json: { available: !conflict, new_start: start.toISOString(), new_end: end.toISOString() } }];"
+      },
+      "id": "365e46ae-82dd-4ee4-a669-c20acddc2123",
+      "name": "Check New Slot Free",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2112,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.available }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "ba3c478e-011f-4da3-a70f-b4abd2884598",
+      "name": "New Slot Available?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2352,
+        -48
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "2bAmrhgGbNIsh23J"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "appointment_id",
+              "keyValue": "={{ $('Get Appointment To Reschedule').item.json.appointment_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "start_time": "={{ $json.new_start }}",
+            "end_time": "={{ $json.new_end }}",
+            "version": "={{ $('Get Appointment To Reschedule').item.json.version + 1 }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "3ee54d93-db69-4813-90d9-96196aab30b9",
+      "name": "Update Appointment Time",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        2592,
+        -144
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "Wc59RmscYiM6P62q"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "demo_session_id": "demo1",
+            "event_id": "={{ \"evt_\" + $now.toMillis() }}",
+            "practice_id": "={{ $('Get Appointment To Reschedule').item.json.practice_id }}",
+            "type": "appointment.rescheduled",
+            "description": "={{ 'Ava rescheduled appointment ' + $('Get Appointment To Reschedule').item.json.appointment_id }}",
+            "related_id": "={{ $('Get Appointment To Reschedule').item.json.appointment_id }}",
+            "created_at": "={{ $now.toISO() }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "f0d87f2c-95bc-4492-8659-d174531eca21",
+      "name": "Log Reschedule Activity",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        2832,
+        -144
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "rc1",
+              "name": "response",
+              "value": "={{ 'Your appointment has been moved to ' + $('Check New Slot Free').item.json.new_start + '.' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4c6b3c44-f057-4980-b9a1-da67f6c3a664",
+      "name": "Reschedule Confirmed",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3072,
+        -144
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "rcf1",
+              "name": "response",
+              "value": "That new time isn't available, so I've kept your original appointment. Would you like to try a different time?",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "22204cc2-44fc-4e0d-ad15-34f9350c6cfe",
+      "name": "Reschedule Conflict - Original Kept",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2592,
+        160
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "rnf1",
+              "name": "response",
+              "value": "I couldn't find that appointment. Could you confirm the appointment ID?",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "31b21495-9db4-48d5-9141-d0a72767f485",
+      "name": "Reschedule - Not Found",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1872,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "2bAmrhgGbNIsh23J"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "appointment_id",
+              "keyValue": "={{ $(\"Scenario Input\").item.json.appointment_id }}"
+            }
+          ]
+        }
+      },
+      "id": "8fc26333-1171-4f3b-b23f-37cd9311eeb2",
+      "name": "Get Appointment To Cancel",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1392,
+        352
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.appointment_id }}",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "0883e21c-7d07-4a03-bcd4-ab597372adf7",
+      "name": "Appointment To Cancel Found?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1632,
+        352
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "2bAmrhgGbNIsh23J"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "appointment_id",
+              "keyValue": "={{ $('Get Appointment To Cancel').item.json.appointment_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "status": "Cancelled"
+          }
+        },
+        "options": {}
+      },
+      "id": "2d5c9f2b-2078-4500-b292-4fc16c7db31f",
+      "name": "Set Status Cancelled",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1872,
+        352
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "Wc59RmscYiM6P62q"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "demo_session_id": "demo1",
+            "event_id": "={{ \"evt_\" + $now.toMillis() }}",
+            "practice_id": "={{ $('Get Appointment To Cancel').item.json.practice_id }}",
+            "type": "appointment.cancelled",
+            "description": "={{ 'Ava cancelled appointment ' + $('Get Appointment To Cancel').item.json.appointment_id + ' - slot released for Finn' }}",
+            "related_id": "={{ $('Get Appointment To Cancel').item.json.appointment_id }}",
+            "created_at": "={{ $now.toISO() }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "26ce2988-13c5-40bb-8792-07a408a07a7d",
+      "name": "Log Cancellation Event",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        2112,
+        352
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cc1",
+              "name": "response",
+              "value": "={{ 'Your appointment (' + $('Get Appointment To Cancel').item.json.treatment + ') has been cancelled. The slot has been released to our waitlist.' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1618688b-6e36-4e14-88c0-933681800f67",
+      "name": "Cancellation Confirmed",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2352,
+        352
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cnf1",
+              "name": "response",
+              "value": "I couldn't find that appointment to cancel. Could you confirm the appointment ID?",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "74f8ece8-9ecc-408c-9178-5f8d09d9148e",
+      "name": "Cancel - Not Found",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1872,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "u1",
+              "name": "response",
+              "value": "I can help with availability, booking, rescheduling, or cancelling. Which of these would you like?",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1c617168-2898-4536-880b-2936a03933af",
+      "name": "Unsupported Action",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1440,
+        1408
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Run Ava Demo": {
+      "main": [
+        [
+          {
+            "node": "Scenario Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scenario Input": {
+      "main": [
+        [
+          {
+            "node": "Get Agents (Practice)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Agents (Practice)": {
+      "main": [
+        [
+          {
+            "node": "Extract Ava Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Ava Status": {
+      "main": [
+        [
+          {
+            "node": "Ava Enabled?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ava Enabled?": {
+      "main": [
+        [
+          {
+            "node": "Route Action",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Ava Paused",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Action": {
+      "main": [
+        [
+          {
+            "node": "Get Appointments (Availability)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Appointments (Booking Check)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Appointment To Reschedule",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Appointment To Cancel",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Unsupported Action",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Appointments (Availability)": {
+      "main": [
+        [
+          {
+            "node": "Compute Availability",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Appointments (Booking Check)": {
+      "main": [
+        [
+          {
+            "node": "Check Slot Free",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Slot Free": {
+      "main": [
+        [
+          {
+            "node": "Slot Available?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Slot Available?": {
+      "main": [
+        [
+          {
+            "node": "Build New Appointment",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Booking Conflict Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build New Appointment": {
+      "main": [
+        [
+          {
+            "node": "Insert New Appointment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert New Appointment": {
+      "main": [
+        [
+          {
+            "node": "Log Booking Activity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Booking Activity": {
+      "main": [
+        [
+          {
+            "node": "Booking Confirmed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Appointment To Reschedule": {
+      "main": [
+        [
+          {
+            "node": "Original Appointment Found?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Original Appointment Found?": {
+      "main": [
+        [
+          {
+            "node": "Get Appointments (Reschedule Check)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reschedule - Not Found",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Appointments (Reschedule Check)": {
+      "main": [
+        [
+          {
+            "node": "Check New Slot Free",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check New Slot Free": {
+      "main": [
+        [
+          {
+            "node": "New Slot Available?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "New Slot Available?": {
+      "main": [
+        [
+          {
+            "node": "Update Appointment Time",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Reschedule Conflict - Original Kept",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Appointment Time": {
+      "main": [
+        [
+          {
+            "node": "Log Reschedule Activity",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Reschedule Activity": {
+      "main": [
+        [
+          {
+            "node": "Reschedule Confirmed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Appointment To Cancel": {
+      "main": [
+        [
+          {
+            "node": "Appointment To Cancel Found?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Appointment To Cancel Found?": {
+      "main": [
+        [
+          {
+            "node": "Set Status Cancelled",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Cancel - Not Found",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Set Status Cancelled": {
+      "main": [
+        [
+          {
+            "node": "Log Cancellation Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Cancellation Event": {
+      "main": [
+        [
+          {
+            "node": "Cancellation Confirmed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "versionId": "29228910-3504-426f-806e-76546e07babe",
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp",
+    "instanceId": "82666a06905407f68d06c73658cdfa99b6326fd9e24f210de55bcbd7bb7bdcf0"
+  },
+  "nodeGroups": [],
+  "id": "lD9wKCrivHYSvF0R",
+  "tags": []
+}

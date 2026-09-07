@@ -1,0 +1,295 @@
+{
+  "name": "Iris — Post-Visit Follow-up [Dashboard v1]",
+  "nodes": [
+    {
+      "id": "8f57b076-671c-40ae-9ca1-16f6c1c14da2",
+      "name": "Dashboard Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "dentalos-demo/iris",
+        "authentication": "headerAuth",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "webhookId": "94f72600-5960-4b73-a7ea-0fcfe0160b34"
+    },
+    {
+      "id": "caf0b89d-5f61-44c3-9bce-41d9874fda48",
+      "name": "Validate Request",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        240,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const b = $input.first().json.body;\nif (!b || !/^[a-zA-Z0-9-]{16,80}$/.test(b.demo_session_id || '') || !/^[a-zA-Z0-9-]{8,100}$/.test(b.request_id || '') || !['oakwood','riverside','brighton'].includes(b.practice_id) || typeof b.action !== 'string' || !b.payload || typeof b.payload !== 'object' || Array.isArray(b.payload)) throw new Error('Invalid demo request');\nreturn [{json: { ...b, workflow: \"iris\" }}];"
+      }
+    },
+    {
+      "id": "f3a19d63-66c3-42d5-b8ca-e49ac66bfd49",
+      "name": "Load Demo Session",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        480,
+        0
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "JrqZh89LzRyrS0AJ"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "demo_session_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Validate Request').first().json.demo_session_id }}"
+            },
+            {
+              "keyName": "practice_id",
+              "condition": "eq",
+              "keyValue": "__dentalos_session_v1__"
+            }
+          ]
+        },
+        "returnAll": true
+      },
+      "alwaysOutputData": true
+    },
+    {
+      "id": "9088bfdd-9d6c-479d-80d5-80c306b40eb3",
+      "name": "Execute Agent Command",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        720,
+        0
+      ],
+      "parameters": {
+        "jsCode": "const sources = {\"demo/types\": function(exports, require) {\"use strict\";\nObject.defineProperty(exports, \"__esModule\", { value: true });\nexports.treatments = exports.providers = exports.DEMO_DATE = void 0;\nexports.uid = uid;\nexports.initials = initials;\nexports.dayLabel = dayLabel;\nexports.moveDate = moveDate;\nexports.DEMO_DATE = '2026-09-07';\nexports.providers = ['Dr. Emma Wilson', 'Dr. James Chen', 'Dr. Sarah Patel'];\nexports.treatments = ['Routine check-up', 'Dental cleaning', 'Consultation', 'Follow-up visit', 'Crown fitting'];\nfunction uid() { return 'demo-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 14); }\nfunction initials(name) { return name.replace('Dr. ', '').split(' ').map(n => n[0]).slice(0, 2).join(''); }\nfunction dayLabel(date, short = false) { return new Date(date + 'T12:00:00Z').toLocaleDateString('en-GB', { timeZone: 'UTC', weekday: short ? 'short' : 'long', month: 'short', day: 'numeric' }); }\nfunction moveDate(date, amount) { const d = new Date(date + 'T12:00:00Z'); d.setUTCDate(d.getUTCDate() + amount); return d.toISOString().slice(0, 10); }\n\n},\"demo/seed\": function(exports, require) {\"use strict\";\nObject.defineProperty(exports, \"__esModule\", { value: true });\nexports.agentDefinitions = void 0;\nexports.createStore = createStore;\nconst types_1 = require(\"./types\");\nconst names = [['Olivia Bennett', 'James Mitchell', 'Sophie Turner', 'Daniel Brooks', 'Amelia Clarke', 'Ethan Parker', 'Isabella Reed', 'Lucas Morgan', 'Mia Collins', 'Noah Edwards', 'Ava Robinson', 'Henry Cooper'], ['Charlotte Hayes', 'Theo Anderson', 'Grace Watson', 'Leo Harrison', 'Lily Thompson', 'Oscar Wright', 'Emily Walker', 'Arthur Green', 'Freya Hall', 'George Young', 'Ella King', 'Jack Scott'], ['Aria Shah', 'Finn Roberts', 'Zoe Campbell', 'Max Lewis', 'Ruby Phillips', 'Adam Evans', 'Chloe Davis', 'Ben Stewart', 'Alice Foster', 'Sam Hughes', 'Eva Morris', 'Louis Bell']];\nexports.agentDefinitions = [\n    { id: 'reception', name: 'Ava', role: 'AI Receptionist', description: 'A warm welcome. A perfectly managed schedule.', faq: 'We are open Monday–Friday. Please use the calendar for current availability.' },\n    { id: 'support', name: 'Milo', role: 'Patient Support', description: 'Helpful answers, wherever your patients are.', faq: 'Please arrive 10 minutes early. Bring your ID and a list of current medications.' },\n    { id: 'reminders', name: 'Luna', role: 'Reminders & Recall', description: 'Keep care on track and empty chairs filled.', faq: 'Reminders are sent only to patients with communication consent.' },\n    { id: 'waitlist', name: 'Finn', role: 'Waitlist Coordinator', description: 'Turn cancelled slots into opportunities for care.', faq: 'Waitlisted patients receive an invitation, never an automatic booking.' },\n    { id: 'followup', name: 'Iris', role: 'Care Follow-up', description: 'Thoughtful administrative follow-ups after every visit.', faq: 'Clinical concerns are always referred to your dental team.' },\n    { id: 'operations', name: 'Leo', role: 'Practice Operations', description: 'Your daily overview, without the admin overhead.', faq: 'Daily summaries are for staff and contain operational information only.' },\n];\nfunction createStore() {\n    return { version: 1, activeId: 'oakwood', practices: ['oakwood', 'riverside', 'brighton'].map((id, index) => {\n            const patients = names[index].map((name, i) => ({ id: `${id}-p${i}`, name, email: `${name.toLowerCase().replace(' ', '.')}@example.test`, phone: `+44 7700 900${String(index * 12 + i).padStart(3, '0')}`, notes: i === 0 ? 'Prefers morning appointments.' : '', consent: i !== 8, recall: i > 8, waitlist: i === 6 || i === 7 }));\n            return { id, name: ['Oakwood Dental', 'Riverside Dental', 'Brighton Smiles'][index], location: ['London, UK', 'Bristol, UK', 'Brighton, UK'][index], timezone: 'Europe/London', opens: '08:00', closes: '18:00', approvalRequired: true, staffRole: 'Practice manager', patients,\n                appointments: patients.slice(0, index === 1 ? 8 : 12).map((p, i) => ({ id: `${id}-a${i}`, patientId: p.id, date: types_1.DEMO_DATE, time: ['09:00', '09:00', '09:30', '10:00', '10:30', '11:00', '11:30', '12:00', '13:30', '14:00', '14:30', '15:00'][i], duration: 30, provider: types_1.providers[i % 3], chair: `Chair ${i % 3 + 1}`, treatment: types_1.treatments[i % 5], status: i < 2 ? 'Completed' : i === 2 ? 'Arrived' : 'Confirmed', source: i % 3 === 0 ? 'Staff' : 'Ava' })),\n                agents: exports.agentDefinitions.map((a, i) => ({ ...a, enabled: true, handled: [28, 42, 36, 8, 16, 4][i] + index })),\n                conversations: patients.slice(0, 5).map((p, i) => ({ id: `${id}-c${i}`, patientId: p.id, channel: ['WhatsApp', 'Phone', 'WhatsApp', 'Web', 'WhatsApp'][i], status: i === 2 ? 'Needs attention' : i === 4 ? 'Resolved' : 'Agent handling', assigned: i === 2 ? 'Unassigned' : 'Milo', messages: [{ id: `${id}-m${i}a`, role: 'patient', text: ['Hi! Can I book a routine check-up for next week?', 'Could I move my appointment to the afternoon?', 'I have a question about my treatment plan. Can I speak to someone?', 'What should I bring to my first appointment?', 'Thank you for the reminder. See you soon!'][i] }, { id: `${id}-m${i}b`, role: 'agent', text: ['Of course. I can help find a suitable time. Please confirm your preferred day.', 'Absolutely. We will check availability and ask you to confirm before making any changes.', 'I have flagged your question for the dental team. A clinician will need to help with treatment advice.', 'Please bring your ID and a list of current medications. Arrive 10 minutes early so our team can welcome you.', 'You are welcome. We look forward to seeing you!'][i] }] })),\n                approvals: [{ id: `${id}-review`, title: 'A patient needs your expertise', description: `${patients[2].name} has a treatment-plan question. Review the conversation and arrange a clinician callback.`, kind: 'urgent', patientIds: [patients[2].id], agentId: 'support', status: 'Pending', conversationId: `${id}-c2` }, { id: `${id}-recall`, title: 'Recall outreach ready to review', description: 'Preview: You are due for a routine visit. Contact us to find a suitable time.', kind: 'recall', patientIds: patients.slice(9).map(p => p.id), agentId: 'reminders', status: 'Pending' }],\n                activity: [{ id: `${id}-log1`, title: 'A new appointment, taken care of', detail: `${patients[4].name} · Routine check-up`, agent: 'Ava' }, { id: `${id}-log2`, title: 'Appointment reminder prepared', detail: `${patients[5].name} · Today, 11:00`, agent: 'Luna' }, { id: `${id}-log3`, title: 'A question answered in WhatsApp', detail: `${patients[3].name} · First-visit information`, agent: 'Milo' }, { id: `${id}-log4`, title: 'Clinical question handed to your team', detail: `${patients[2].name} · Awaiting review`, agent: 'Milo' }], recipes: { reminder: true, recall: true, waitlist: true, followup: true, summary: true } };\n        }) };\n}\n\n},\"demo/operations\": function(exports, require) {\"use strict\";\nObject.defineProperty(exports, \"__esModule\", { value: true });\nexports.recipes = void 0;\nexports.log = log;\nexports.minutes = minutes;\nexports.validateAppointment = validateAppointment;\nexports.saveAppointment = saveAppointment;\nexports.changeStatus = changeStatus;\nexports.recipients = recipients;\nexports.proposeRecipe = proposeRecipe;\nexports.decideApproval = decideApproval;\nconst types_1 = require(\"./types\");\nfunction log(p, title, detail, agent = 'Staff') {\n    p.activity.unshift({ id: (0, types_1.uid)(), title, detail, agent });\n    p.activity = p.activity.slice(0, 100);\n}\nfunction minutes(value) { const [h, m] = value.split(':').map(Number); return h * 60 + m; }\nfunction validateAppointment(p, a) {\n    if (!p.patients.some(v => v.id === a.patientId))\n        throw new Error('Choose a patient from this practice.');\n    if (!types_1.providers.includes(a.provider) || !['Chair 1', 'Chair 2', 'Chair 3'].includes(a.chair) || !types_1.treatments.includes(a.treatment))\n        throw new Error('Choose a valid provider, chair and treatment.');\n    if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(a.date) || Number.isNaN(Date.parse(a.date)) || new Date(a.date).toISOString().slice(0, 10) !== a.date || a.date < types_1.DEMO_DATE)\n        throw new Error('Choose a valid date on or after the demo date.');\n    if ([0, 6].includes(new Date(a.date + 'T12:00:00Z').getUTCDay()))\n        throw new Error('The practice is closed on weekends.');\n    if (!/^([01]\\d|2[0-3]):[0-5]\\d$/.test(a.time) || ![15, 30, 45, 60, 90].includes(a.duration))\n        throw new Error('Select a valid time and duration.');\n    const start = minutes(a.time);\n    if (start < minutes(p.opens) || start + a.duration > minutes(p.closes))\n        throw new Error(`Appointments must fit within ${p.opens}–${p.closes} (${p.timezone}).`);\n    if (p.appointments.some(other => other.id !== a.id && other.date === a.date && other.status !== 'Cancelled' && (other.provider === a.provider || other.chair === a.chair) && start < minutes(other.time) + other.duration && start + a.duration > minutes(other.time)))\n        throw new Error('That provider or chair is already booked. Please choose another time.');\n}\nfunction saveAppointment(p, a) {\n    const previous = p.appointments.find(v => v.id === a.id);\n    if (previous && ['Cancelled', 'Completed'].includes(previous.status))\n        throw new Error('This appointment is closed. Create a new booking instead.');\n    validateAppointment(p, a);\n    if (previous)\n        Object.assign(previous, a);\n    else\n        p.appointments.push(a);\n    log(p, previous ? 'Appointment rescheduled' : 'Appointment booked', `${p.patients.find(v => v.id === a.patientId)?.name} · ${a.date}, ${a.time}`, a.source);\n}\nfunction changeStatus(p, id, status) {\n    const a = p.appointments.find(v => v.id === id);\n    if (!a || ['Completed', 'Cancelled'].includes(a.status))\n        throw new Error('This appointment is no longer available for changes.');\n    if (status === 'Completed' && a.status !== 'Arrived')\n        throw new Error('Mark the patient as arrived first.');\n    a.status = status;\n    log(p, `Appointment ${status.toLowerCase()}`, `${p.patients.find(v => v.id === a.patientId)?.name} · ${a.time}`);\n}\nexports.recipes = [\n    { id: 'reminder', name: 'Appointment reminders', description: 'A friendly reminder for upcoming appointments, with a simple way to reply.', agentId: 'reminders' },\n    { id: 'recall', name: 'Bring patients back to care', description: 'Invite overdue patients to arrange their next routine visit.', agentId: 'reminders' },\n    { id: 'waitlist', name: 'Make room for the waitlist', description: 'Invite interested patients to discuss recently available appointments.', agentId: 'waitlist' },\n    { id: 'followup', name: 'A thoughtful follow-up', description: 'Check whether patients need administrative help after a completed visit.', agentId: 'followup' },\n    { id: 'summary', name: 'Daily practice briefing', description: 'Turn appointments, open conversations and handoffs into a staff summary.', agentId: 'operations' },\n];\nfunction recipients(p, kind) {\n    return p.patients.filter(patient => patient.consent && (kind === 'recall' ? patient.recall : kind === 'waitlist' ? patient.waitlist : kind === 'followup' ? p.appointments.some(a => a.patientId === patient.id && a.status === 'Completed') : kind === 'reminder' ? p.appointments.some(a => a.patientId === patient.id && a.date >= types_1.DEMO_DATE && a.status === 'Confirmed') : false)).map(v => v.id);\n}\nfunction proposeRecipe(p, kind) {\n    const recipe = exports.recipes.find(v => v.id === kind);\n    if (!recipe || !p.recipes[kind])\n        throw new Error('This recipe is paused.');\n    if (!p.agents.find(v => v.id === recipe.agentId)?.enabled)\n        throw new Error('Enable the assigned agent before running this simulation.');\n    if (p.approvals.some(a => a.kind === kind && a.status === 'Pending'))\n        throw new Error('A proposal is already awaiting review. Open the approval queue.');\n    const ids = recipients(p, kind);\n    if (kind !== 'summary' && !ids.length)\n        throw new Error('No eligible patients. Communication opt-outs are respected.');\n    const a = { id: (0, types_1.uid)(), kind, title: recipe.name, description: kind === 'summary' ? 'Prepare an operational summary for staff. No patient messages.' : `Preview: ${kind === 'recall' ? 'You are due for a routine visit. Contact us to find a suitable time.' : kind === 'waitlist' ? 'An appointment may be available. Reply to discuss a suitable slot; no booking is made automatically.' : kind === 'followup' ? 'Thank you for visiting. Contact the practice if you need administrative help; clinical concerns go to the dental team.' : 'A reminder of your upcoming appointment. Contact the practice if you need to make changes.'}`, patientIds: ids, agentId: recipe.agentId, status: 'Pending' };\n    p.approvals.unshift(a);\n    log(p, 'Automation prepared for review', `${recipe.name} · ${ids.length} eligible recipients`, p.agents.find(v => v.id === recipe.agentId).name);\n}\nfunction decideApproval(p, id, approve) {\n    const a = p.approvals.find(v => v.id === id);\n    if (!a || a.status !== 'Pending')\n        throw new Error('This proposal has already been processed.');\n    const agent = p.agents.find(v => v.id === a.agentId);\n    if (approve && a.kind !== 'urgent' && !agent?.enabled)\n        throw new Error('The assigned agent is paused.');\n    if (approve && a.kind !== 'urgent' && !p.recipes[a.kind])\n        throw new Error('This automation is paused.');\n    a.status = approve ? 'Approved' : 'Rejected';\n    if (approve && a.kind === 'urgent') {\n        const c = p.conversations.find(v => v.id === a.conversationId);\n        if (c) {\n            c.status = 'Staff handling';\n            c.assigned = 'Dr. Emma Wilson';\n            c.messages.push({ id: (0, types_1.uid)(), role: 'system', text: 'Staff accepted this handoff. A clinician must review before any clinical reply.' });\n        }\n    }\n    else if (approve && a.kind === 'summary') {\n        log(p, 'Daily briefing prepared', `${p.appointments.filter(v => v.date === types_1.DEMO_DATE && v.status !== 'Cancelled').length} appointments · ${p.conversations.filter(v => v.status !== 'Resolved').length} open conversations · ${p.approvals.filter(v => v.status === 'Pending').length} pending reviews`, agent?.name);\n    }\n    else if (approve) {\n        const eligible = new Set(recipients(p, a.kind));\n        const ids = a.patientIds.filter(id => eligible.has(id));\n        for (const patientId of ids) {\n            p.conversations.unshift({ id: (0, types_1.uid)(), patientId, channel: 'WhatsApp', status: 'Agent handling', assigned: agent?.name ?? 'Agent', messages: [{ id: (0, types_1.uid)(), role: 'agent', text: a.description.replace('Preview: ', '') }, { id: (0, types_1.uid)(), role: 'system', text: 'Demo message only. Nothing was delivered externally.' }] });\n        }\n        if (agent)\n            agent.handled += ids.length;\n        log(p, 'Outreach simulated', `${ids.length} messages prepared; ${a.patientIds.length - ids.length} recipients skipped after eligibility recheck.`, agent?.name);\n    }\n    log(p, `Proposal ${approve ? 'approved' : 'rejected'}`, a.title);\n}\n\n},\"n8n/engine\": function(exports, require) {\"use strict\";\nObject.defineProperty(exports, \"__esModule\", { value: true });\nexports.routes = void 0;\nexports.freshSnapshot = freshSnapshot;\nexports.execute = execute;\nconst seed_1 = require(\"../demo/seed\");\nconst types_1 = require(\"../demo/types\");\nconst operations_1 = require(\"../demo/operations\");\nexports.routes = ['ava', 'milo', 'luna', 'finn', 'iris', 'leo', 'approvals', 'guided-demo', 'setup', 'state'];\nfunction freshSnapshot() { const store = (0, seed_1.createStore)(); store.practices.forEach(p => p.agents.forEach(a => a.handled = 0)); return { store, receipts: {}, proposals: {}, offers: [], deliveries: [], steps: {} }; }\nfunction required(value, label) { if (typeof value !== 'string' || !value.trim() || value.length > 1500)\n    throw new Error(`Invalid ${label}.`); return value.trim(); }\nfunction bool(value) { if (typeof value !== 'boolean')\n    throw new Error('Expected true or false.'); return value; }\nfunction agent(p, id) { const a = p.agents.find(a => a.id === id); if (!a?.enabled)\n    throw new Error('The assigned agent is paused.'); return a; }\nfunction patient(p, id) { const v = p.patients.find(v => v.id === id); if (!v)\n    throw new Error('Patient not found in this practice.'); return v; }\nfunction appointment(p, id) { const a = p.appointments.find(v => v.id === id); if (!a)\n    throw new Error('Appointment not found in this practice.'); return a; }\nfunction strictSlot(p, a) { (0, operations_1.validateAppointment)(p, a); if (p.appointments.some(v => v.id !== a.id && v.patientId === a.patientId && v.date === a.date && v.status !== 'Cancelled' && (0, operations_1.minutes)(a.time) < (0, operations_1.minutes)(v.time) + v.duration && (0, operations_1.minutes)(a.time) + a.duration > (0, operations_1.minutes)(v.time)))\n    throw new Error('This patient already has an overlapping appointment.'); }\nfunction conversation(p, id) { const c = p.conversations.find(c => c.id === id); if (!c)\n    throw new Error('Conversation not found in this practice.'); return c; }\nfunction addConversation(p, patientId, text, name, status = 'Agent handling') { const c = { id: (0, types_1.uid)(), patientId, channel: 'WhatsApp', status, assigned: status === 'Needs attention' ? 'Unassigned' : name, messages: [{ id: (0, types_1.uid)(), role: 'agent', text }, { id: (0, types_1.uid)(), role: 'system', text: 'Simulated message saved in n8n. Nothing delivered externally.' }] }; p.conversations.unshift(c); return c; }\nfunction briefing(p) { const metrics = { confirmed: p.appointments.filter(a => a.status === 'Confirmed').length, completed: p.appointments.filter(a => a.status === 'Completed').length, cancelled: p.appointments.filter(a => a.status === 'Cancelled').length, waitlistFilled: p.appointments.filter(a => a.source === 'Finn' && a.status !== 'Cancelled').length, attention: p.conversations.filter(c => c.status === 'Needs attention').length, pending: p.approvals.filter(a => a.status === 'Pending').length, enabled: p.agents.filter(a => a.enabled).length }; const message = `${metrics.confirmed} confirmed appointments, ${metrics.attention} conversations needing attention, and ${metrics.pending} pending approvals. Finn filled ${metrics.waitlistFilled} slots. Sample day: ${types_1.DEMO_DATE}.`; (0, operations_1.log)(p, 'Operations briefing', message, 'Leo'); return { message, metrics }; }\nfunction prepare(s, p, kind) {\n    const recipe = operations_1.recipes.find(r => r.id === kind);\n    if (!recipe)\n        throw new Error('Unknown automation.');\n    agent(p, recipe.agentId);\n    const pending = p.approvals.find(a => a.kind === kind && a.status === 'Pending');\n    if (pending)\n        return { message: 'A proposal is already awaiting review.', approval_id: pending.id };\n    (0, operations_1.proposeRecipe)(p, recipe.id);\n    const approval = p.approvals[0];\n    approval.patientIds = approval.patientIds.filter(id => !s.deliveries.includes(`${p.id}:${kind}:${id}:${eligibilityVersion(p, kind, id)}`));\n    if (kind !== 'summary' && !approval.patientIds.length)\n        throw new Error('No new eligible recipients. This stage was already simulated.');\n    return { message: 'Prepared for staff approval. No message sent.', approval_id: approval.id, recipients: approval.patientIds };\n}\nfunction eligibilityVersion(p, kind, id) { return kind === 'recall' ? types_1.DEMO_DATE : JSON.stringify(p.appointments.filter(a => a.patientId === id).map(a => [a.id, a.date, a.time, a.status])); }\nfunction ava(s, p, action, x) {\n    agent(p, 'reception');\n    if (action === 'availability') {\n        const pat = patient(p, x.patientId);\n        const free = [];\n        for (let t = (0, operations_1.minutes)(p.opens); t + 30 <= (0, operations_1.minutes)(p.closes); t += 30) {\n            const time = `${Math.floor(t / 60)}`.padStart(2, '0') + ':' + `${t % 60}`.padStart(2, '0');\n            try {\n                strictSlot(p, { id: 'availability', patientId: pat.id, date: required(x.date, 'date'), time, duration: 30, provider: types_1.providers[0], chair: 'Chair 1', treatment: types_1.treatments[0], status: 'Confirmed', source: 'Ava' });\n                free.push(time);\n            }\n            catch { }\n            if (free.length === 3)\n                break;\n        }\n        return { message: free.length ? `Available: ${free.join(', ')}` : 'No matching slots available.', slots: free };\n    }\n    if (action === 'preview' || action === 'cancel-preview') {\n        let a;\n        let cancelId;\n        let before = '';\n        if (action === 'cancel-preview') {\n            const old = appointment(p, x.appointmentId);\n            if (['Completed', 'Cancelled'].includes(old.status))\n                throw new Error('Appointment is closed.');\n            cancelId = old.id;\n            before = JSON.stringify(old);\n        }\n        else {\n            const input = x.appointment;\n            if (!input || typeof input !== 'object')\n                throw new Error('Appointment required.');\n            const old = p.appointments.find(a => a.id === input.id);\n            if (old && ['Completed', 'Cancelled'].includes(old.status))\n                throw new Error('Appointment is closed.');\n            a = { id: old?.id ?? (0, types_1.uid)(), patientId: required(input.patientId, 'patient'), date: required(input.date, 'date'), time: required(input.time, 'time'), duration: input.duration, provider: required(input.provider, 'provider'), chair: required(input.chair, 'chair'), treatment: required(input.treatment, 'treatment'), status: old?.status ?? 'Confirmed', source: 'Ava' };\n            strictSlot(p, a);\n            before = old ? JSON.stringify(old) : '';\n        }\n        const token = (0, types_1.uid)();\n        s.proposals[token] = { practice: p.id, appointment: a, cancelId, before, expires: Date.now() + 300000 };\n        return { message: 'Review the exact proposal, then confirm. Demo identity selected, not authenticated.', token, appointment: a ?? appointment(p, cancelId), cancel: !!cancelId };\n    }\n    if (action === 'confirm') {\n        const token = required(x.token, 'confirmation');\n        const proposal = s.proposals[token];\n        if (!proposal || proposal.practice !== p.id || proposal.expires < Date.now())\n            throw new Error('Confirmation expired. Preview again.');\n        const old = p.appointments.find(a => a.id === (proposal.cancelId ?? proposal.appointment?.id));\n        if ((old ? JSON.stringify(old) : '') !== proposal.before)\n            throw new Error('Appointment changed. Preview again.');\n        if (proposal.cancelId)\n            (0, operations_1.changeStatus)(p, proposal.cancelId, 'Cancelled');\n        else {\n            strictSlot(p, proposal.appointment);\n            (0, operations_1.saveAppointment)(p, proposal.appointment);\n        }\n        const a = proposal.appointment ?? old;\n        delete s.proposals[token];\n        agent(p, 'reception').handled++;\n        addConversation(p, a.patientId, `Demo appointment ${proposal.cancelId ? 'cancelled' : 'confirmed'}: ${a.date} at ${a.time}.`, 'Ava');\n        return { message: proposal.cancelId ? 'Appointment cancelled in n8n.' : 'Appointment saved in n8n.', appointment_id: a.id };\n    }\n    throw new Error('Unsupported Ava action.');\n}\nfunction support(s, p, action, x) {\n    const pat = patient(p, x.patientId);\n    const c = x.conversationId ? conversation(p, x.conversationId) : addConversation(p, pat.id, 'Demo conversation started.', 'Milo');\n    if (c.patientId !== pat.id)\n        throw new Error('Conversation patient mismatch.');\n    const text = typeof x.text === 'string' ? x.text.slice(0, 1500) : action;\n    c.messages.push({ id: (0, types_1.uid)(), role: 'patient', text });\n    if (action === 'optout' || /\\b(stop|unsubscribe|opt.?out)\\b/i.test(text)) {\n        pat.consent = false;\n        c.messages.push({ id: (0, types_1.uid)(), role: 'system', text: 'Outreach permission withdrawn.' });\n        return { message: 'Communication preference saved.', conversation_id: c.id };\n    }\n    if (c.status === 'Resolved')\n        throw new Error('Conversation is resolved.');\n    if (c.status === 'Staff handling')\n        return { message: 'Patient message saved for staff. No automated reply.', conversation_id: c.id };\n    agent(p, 'support');\n    if (action === 'booking') {\n        const result = ava(s, p, 'preview', x);\n        c.messages.push({ id: (0, types_1.uid)(), role: 'agent', text: 'Ava has prepared a booking proposal. Review and confirm to save it.' });\n        return { ...result, conversation_id: c.id };\n    }\n    const urgent = action === 'urgent' || /breath|swelling|bleeding|emergency|severe/i.test(text);\n    const clinical = urgent || action === 'human' || /pain|treatment|diagnos|medicin|prescri|human/i.test(text);\n    const reply = clinical ? (urgent ? 'Breathing difficulty may be an emergency. Seek local emergency help now; do not wait for this demo. ' : '') + 'Your concern is flagged for staff. No clinician has reviewed it yet; this is not a diagnosis.' : action === 'faq' ? agent(p, 'support').faq : 'This is scripted support. Choose a scenario or ask staff for help.';\n    c.messages.push({ id: (0, types_1.uid)(), role: 'agent', text: reply });\n    if (clinical) {\n        c.status = 'Needs attention';\n        c.assigned = 'Unassigned';\n        if (!p.approvals.some(a => a.conversationId === c.id && a.status === 'Pending'))\n            p.approvals.unshift({ id: (0, types_1.uid)(), kind: 'urgent', title: 'Patient concern — staff review', description: reply, patientIds: [pat.id], agentId: 'support', conversationId: c.id, status: 'Pending' });\n    }\n    agent(p, 'support').handled++;\n    (0, operations_1.log)(p, 'Patient support simulated', pat.name, 'Milo');\n    return { message: reply, conversation_id: c.id };\n}\nfunction finn(s, p, action, x) {\n    agent(p, 'waitlist');\n    if (!p.recipes.waitlist)\n        throw new Error('Waitlist recipe is paused.');\n    if (action === 'invite') {\n        const a = appointment(p, x.appointmentId);\n        if (a.status !== 'Cancelled')\n            throw new Error('Choose a cancelled appointment.');\n        const existing = s.offers.find(o => o.practice === p.id && o.appointment.id === a.id && o.status === 'Pending' && o.expires > Date.now());\n        if (existing)\n            return { message: 'An invitation already exists.', offer_id: existing.id, approval_id: existing.approval };\n        const pat = p.patients.find(v => v.waitlist && v.consent && !s.offers.some(o => o.practice === p.id && o.appointment.id === a.id && o.patient === v.id && o.status === 'Declined') && (() => { try {\n            strictSlot(p, { ...a, id: 'check', patientId: v.id, status: 'Confirmed' });\n            return true;\n        }\n        catch {\n            return false;\n        } })());\n        if (!pat)\n            throw new Error('No eligible waitlist candidate fits this slot.');\n        const id = (0, types_1.uid)();\n        const approval = (0, types_1.uid)();\n        s.offers.push({ id, practice: p.id, appointment: { ...a }, patient: pat.id, approval, status: 'Pending', expires: Date.now() + 30 * 60000 });\n        p.approvals.unshift({ id: approval, kind: 'waitlist', title: 'Waitlist invitation', description: `Preview: A slot on ${a.date} at ${a.time} may be available. Reply to request it; no automatic booking.`, patientIds: [pat.id], agentId: 'waitlist', status: 'Pending' });\n        (0, operations_1.log)(p, 'Waitlist invitation prepared', pat.name, 'Finn');\n        return { message: 'Approve the invitation before simulating acceptance.', offer_id: id, approval_id: approval, patient: pat.name };\n    }\n    const offer = s.offers.find(o => o.id === x.offerId && o.practice === p.id);\n    if (!offer || offer.status !== 'Pending' || offer.expires < Date.now())\n        throw new Error('Offer unavailable or expired.');\n    if (action === 'decline') {\n        offer.status = 'Declined';\n        return { message: 'Offer declined. Invite the next candidate.', appointment_id: offer.appointment.id };\n    }\n    if (action === 'accept') {\n        if (p.approvals.find(a => a.id === offer.approval)?.status !== 'Approved')\n            throw new Error('Staff approval is required first.');\n        const pat = patient(p, offer.patient);\n        if (!pat.consent || !pat.waitlist)\n            throw new Error('Patient is no longer eligible.');\n        agent(p, 'reception');\n        const a = { ...offer.appointment, id: (0, types_1.uid)(), patientId: pat.id, status: 'Confirmed', source: 'Finn' };\n        strictSlot(p, a);\n        (0, operations_1.saveAppointment)(p, a);\n        offer.status = 'Accepted';\n        pat.waitlist = false;\n        agent(p, 'waitlist').handled++;\n        addConversation(p, pat.id, `Simulated acceptance recorded. Appointment confirmed at ${a.time}.`, 'Finn');\n        return { message: 'Cancelled slot filled after simulated patient acceptance.', appointment_id: a.id };\n    }\n    throw new Error('Unsupported Finn action.');\n}\nfunction controls(p, action, x) {\n    if (action === 'agent') {\n        const a = p.agents.find(a => a.id === x.id);\n        if (!a)\n            throw new Error('Agent not found.');\n        if (x.enabled !== undefined)\n            a.enabled = bool(x.enabled);\n        if (x.faq !== undefined)\n            a.faq = required(x.faq, 'FAQ');\n    }\n    else if (action === 'patient') {\n        const pat = patient(p, x.id);\n        for (const key of ['consent', 'waitlist', 'recall'])\n            if (x[key] !== undefined)\n                pat[key] = bool(x[key]);\n        if (x.notes !== undefined) {\n            if (typeof x.notes !== 'string' || x.notes.length > 1000)\n                throw new Error('Invalid notes.');\n            pat.notes = x.notes;\n        }\n    }\n    else if (action === 'recipe') {\n        const key = required(x.id, 'recipe');\n        if (!operations_1.recipes.some(r => r.id === key))\n            throw new Error('Unknown recipe.');\n        p.recipes[key] = bool(x.enabled);\n    }\n    else if (action === 'status') {\n        if (x.status !== 'Arrived' && x.status !== 'Completed')\n            throw new Error('Use Ava for cancellation.');\n        (0, operations_1.changeStatus)(p, required(x.id, 'appointment'), x.status);\n    }\n    else if (action === 'conversation') {\n        const c = conversation(p, x.id);\n        if (x.status !== undefined) {\n            if (!['Staff handling', 'Agent handling', 'Resolved'].includes(String(x.status)))\n                throw new Error('Invalid conversation status.');\n            c.status = x.status;\n            c.assigned = c.status === 'Staff handling' ? 'Emma Wilson' : 'Milo';\n        }\n        if (x.text !== undefined) {\n            if (c.status !== 'Staff handling')\n                throw new Error('Take over before replying as staff.');\n            c.messages.push({ id: (0, types_1.uid)(), role: 'staff', text: required(x.text, 'reply') });\n        }\n    }\n    else if (action === 'settings') {\n        if (x.approvalRequired !== undefined)\n            p.approvalRequired = bool(x.approvalRequired);\n        if (x.name !== undefined)\n            p.name = required(x.name, 'name').slice(0, 60);\n        if (x.timezone !== undefined) {\n            const tz = required(x.timezone, 'timezone');\n            new Intl.DateTimeFormat('en', { timeZone: tz });\n            p.timezone = tz;\n        }\n        if (x.staffRole !== undefined)\n            p.staffRole = required(x.staffRole, 'role');\n        const opens = x.opens === undefined ? p.opens : required(x.opens, 'opens');\n        const closes = x.closes === undefined ? p.closes : required(x.closes, 'closes');\n        if (![opens, closes].every(t => /^([01]\\d|2[0-3]):[0-5]\\d$/.test(t)) || (0, operations_1.minutes)(opens) >= (0, operations_1.minutes)(closes))\n            throw new Error('Invalid opening hours.');\n        if (p.appointments.some(a => a.status === 'Confirmed' && ((0, operations_1.minutes)(a.time) < (0, operations_1.minutes)(opens) || (0, operations_1.minutes)(a.time) + a.duration > (0, operations_1.minutes)(closes))))\n            throw new Error('Hours exclude existing bookings.');\n        p.opens = opens;\n        p.closes = closes;\n    }\n    else\n        throw new Error('Unsupported staff action.');\n    (0, operations_1.log)(p, 'Staff setting updated', action);\n    return { message: 'Saved in n8n.' };\n}\nfunction dispatch(s, p, workflow, action, x) {\n    if (workflow === 'ava')\n        return ava(s, p, action, x);\n    if (workflow === 'milo')\n        return support(s, p, action, x);\n    if (workflow === 'luna') {\n        agent(p, 'reminders');\n        if (!['reminder', 'recall'].includes(String(x.kind)))\n            throw new Error('Choose reminder or recall.');\n        if (action === 'preview')\n            return { message: 'Eligible recipients — no messages sent.', recipients: (0, operations_1.recipients)(p, x.kind) };\n        if (action === 'prepare')\n            return prepare(s, p, String(x.kind));\n    }\n    if (workflow === 'finn')\n        return finn(s, p, action, x);\n    if (workflow === 'iris') {\n        agent(p, 'followup');\n        if (action === 'prepare')\n            return prepare(s, p, 'followup');\n        if (action === 'reply') {\n            const pat = patient(p, x.patientId);\n            if (!p.appointments.some(a => a.patientId === pat.id && a.status === 'Completed'))\n                throw new Error('No completed visit for this patient.');\n            if (x.reply === 'fine') {\n                addConversation(p, pat.id, 'Thank you. Your simulated follow-up is complete.', 'Iris');\n                return { message: 'Follow-up recorded.' };\n            }\n            return support(s, p, x.reply === 'booking' ? 'booking' : 'human', { ...x, text: 'Please ask the team to contact me.' });\n        }\n    }\n    if (workflow === 'leo' && action === 'briefing') {\n        agent(p, 'operations').handled++;\n        return briefing(p);\n    }\n    if (workflow === 'approvals' && action === 'decide') {\n        const a = p.approvals.find(a => a.id === x.id);\n        if (!a)\n            throw new Error('Approval not found.');\n        if (x.approve === true && a.kind === 'waitlist') {\n            const o = s.offers.find(o => o.approval === a.id && o.practice === p.id);\n            if (!o || o.expires < Date.now() || o.status !== 'Pending')\n                throw new Error('Waitlist offer unavailable.');\n            strictSlot(p, { ...o.appointment, id: 'check', patientId: o.patient, status: 'Confirmed' });\n        }\n        (0, operations_1.decideApproval)(p, a.id, bool(x.approve));\n        if (x.approve === true && !['summary', 'urgent'].includes(a.kind))\n            a.patientIds.filter(id => (0, operations_1.recipients)(p, a.kind).includes(id)).forEach(id => s.deliveries.push(`${p.id}:${a.kind}:${id}:${eligibilityVersion(p, a.kind, id)}`));\n        return { message: x.approve ? 'Approval applied to simulated records.' : 'Proposal rejected.' };\n    }\n    if (workflow === 'state')\n        return controls(p, action, x);\n    if (workflow === 'guided-demo' && action === 'step') {\n        const step = Number(x.step);\n        const last = s.steps[p.id] ?? 0;\n        if (!Number.isInteger(step) || step !== last + 1 || step > 8)\n            throw new Error(`Next step is ${last + 1}.`);\n        let result;\n        if (step === 1)\n            result = { message: 'Practice ready. Continue to prepare a booking.' };\n        else if (step === 2)\n            result = support(s, p, 'booking', { patientId: p.patients[3].id, appointment: { id: 'guided-new', patientId: p.patients[3].id, date: types_1.DEMO_DATE, time: '16:00', duration: 30, provider: types_1.providers[0], chair: 'Chair 1', treatment: types_1.treatments[0] } });\n        else if (step === 3)\n            result = prepare(s, p, 'reminder');\n        else if (step === 4) {\n            const a = p.appointments.find(a => a.status === 'Confirmed');\n            if (!a)\n                throw new Error('No appointment to cancel.');\n            result = ava(s, p, 'cancel-preview', { appointmentId: a.id });\n        }\n        else if (step === 5) {\n            const a = p.appointments.find(a => a.status === 'Cancelled');\n            if (!a)\n                throw new Error('Confirm cancellation from step 4 first.');\n            result = finn(s, p, 'invite', { appointmentId: a.id });\n        }\n        else if (step === 6)\n            result = prepare(s, p, 'followup');\n        else if (step === 7)\n            result = support(s, p, 'human', { patientId: p.patients[0].id, text: 'I need to speak to the team about a concern.' });\n        else\n            result = dispatch(s, p, 'leo', 'briefing', {});\n        s.steps[p.id] = step;\n        return { ...result, step, next: step < 8 ? step + 1 : null };\n    }\n    throw new Error('Unsupported workflow action.');\n}\nfunction execute(snapshot, req) {\n    const base = { version: 1, demo: true, request_id: req.request_id };\n    try {\n        if (!/^[a-zA-Z0-9-]{16,80}$/.test(req.demo_session_id) || !/^[a-zA-Z0-9-]{8,100}$/.test(req.request_id))\n            throw new Error('Invalid request identity.');\n        if (!exports.routes.includes(req.workflow))\n            throw new Error('Unknown workflow.');\n        const fingerprint = JSON.stringify([req.workflow, req.action, req.practice_id, req.payload]);\n        const receipt = snapshot?.receipts[req.request_id];\n        if (receipt) {\n            if (receipt.fingerprint !== fingerprint)\n                throw new Error('Request ID reused with different data.');\n            return { snapshot, write: false, envelope: { ...base, success: true, message: String(receipt.result.message), result: { ...receipt.result, replayed: true }, store: snapshot.store } };\n        }\n        let s = snapshot ? JSON.parse(JSON.stringify(snapshot)) : null;\n        if (req.workflow === 'setup') {\n            if (req.action === 'reset') {\n                if (req.payload.confirm !== 'RESET THIS SESSION')\n                    throw new Error('Reset confirmation required.');\n                s = freshSnapshot();\n            }\n            else if (req.action === 'seed')\n                s ??= freshSnapshot();\n            else\n                throw new Error('Unknown setup action.');\n        }\n        if (!s)\n            return { snapshot, write: false, envelope: { ...base, success: false, error: 'UNSEEDED', message: 'Initialize fictional data for this presenter session.', result: {}, store: null } };\n        const p = s.store.practices.find(p => p.id === req.practice_id);\n        if (!p)\n            throw new Error('Practice is not part of this demo session.');\n        let result;\n        if (req.workflow === 'setup')\n            result = { message: req.action === 'reset' ? 'Only this presenter session was reset.' : 'Fictional session initialized.' };\n        else if (req.workflow === 'state' && req.action === 'read')\n            return { snapshot, write: false, envelope: { ...base, success: true, message: 'Demo state loaded.', result: { offers: s.offers.filter(o => o.practice === p.id), step: s.steps[p.id] ?? 0 }, store: s.store } };\n        else\n            result = dispatch(s, p, req.workflow, req.action, req.payload);\n        s.receipts[req.request_id] = { fingerprint, result };\n        if (Object.keys(s.receipts).length > 500)\n            throw new Error('Session action limit reached. Reset the demo session.');\n        s.proposals = Object.fromEntries(Object.entries(s.proposals).filter(([, v]) => v.expires > Date.now()));\n        return { snapshot: s, write: true, envelope: { ...base, success: true, message: String(result.message ?? 'Workflow completed.'), result, store: s.store } };\n    }\n    catch (error) {\n        return { snapshot, write: false, envelope: { ...base, success: false, error: 'WORKFLOW_REJECTED', message: error instanceof Error ? error.message : 'Workflow failed.', result: {}, store: null } };\n    }\n}\n\n}};\nconst cache = {};\nfunction load(id) { if(cache[id]) return cache[id]; const exports = {}; cache[id] = exports; const resolve = (ref) => { const parts = id.split('/'); parts.pop(); for(const part of ref.split('/')) { if(part === '..') parts.pop(); else if(part !== '.') parts.push(part); } return load(parts.join('/')); }; sources[id](exports, resolve); return exports; }\n\nconst rows = $input.all().map(i => i.json).filter(r => r.demo_session_id);\nif(rows.length > 1) throw new Error('Duplicate session rows. Repair this synthetic session before continuing.');\nconst snapshot = rows[0]?.dashboard_snapshot ? JSON.parse(rows[0].dashboard_snapshot) : null;\nconst req = $('Validate Request').first().json;\nconst outcome = load('n8n/engine').execute(snapshot, req);\nreturn [{json: { ...outcome, demo_session_id: req.demo_session_id, practice_id: '__dentalos_session_v1__', dashboard_snapshot: outcome.snapshot ? JSON.stringify(outcome.snapshot) : '' }}];"
+      }
+    },
+    {
+      "id": "7c13c124-1449-431a-96ae-e209c93600c7",
+      "name": "Persist Changes?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        960,
+        0
+      ],
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "e1210d76-7a6d-49ff-80cf-af5120bfe54e",
+              "leftValue": "={{ $json.write }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "7f946846-0fb6-42c8-bd83-06a4eef18914",
+      "name": "Save Demo Session",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1200,
+        -100
+      ],
+      "parameters": {
+        "resource": "row",
+        "operation": "upsert",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "JrqZh89LzRyrS0AJ"
+        },
+        "matchType": "allConditions",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "demo_session_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Validate Request').first().json.demo_session_id }}"
+            },
+            {
+              "keyName": "practice_id",
+              "condition": "eq",
+              "keyValue": "__dentalos_session_v1__"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "demo_session_id": "={{ $('Validate Request').first().json.demo_session_id }}",
+            "practice_id": "__dentalos_session_v1__",
+            "dashboard_snapshot": "={{ $('Execute Agent Command').first().json.dashboard_snapshot }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "demo_session_id",
+              "displayName": "demo_session_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "practice_id",
+              "displayName": "practice_id",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            },
+            {
+              "id": "dashboard_snapshot",
+              "displayName": "dashboard_snapshot",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "readOnly": false,
+              "removed": false
+            }
+          ]
+        },
+        "options": {}
+      }
+    },
+    {
+      "id": "872dafd5-76f3-4a88-88c1-dc75ced97544",
+      "name": "Respond After Persistence",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.4,
+      "position": [
+        1480,
+        0
+      ],
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $('Execute Agent Command').first().json.envelope }}",
+        "options": {
+          "responseCode": 200
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Dashboard Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validate Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Request": {
+      "main": [
+        [
+          {
+            "node": "Load Demo Session",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Load Demo Session": {
+      "main": [
+        [
+          {
+            "node": "Execute Agent Command",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Execute Agent Command": {
+      "main": [
+        [
+          {
+            "node": "Persist Changes?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Persist Changes?": {
+      "main": [
+        [
+          {
+            "node": "Save Demo Session",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respond After Persistence",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Save Demo Session": {
+      "main": [
+        [
+          {
+            "node": "Respond After Persistence",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1",
+    "saveDataSuccessExecution": "none",
+    "saveDataErrorExecution": "none",
+    "executionTimeout": 45
+  },
+  "active": false,
+  "pinData": {},
+  "tags": []
+}

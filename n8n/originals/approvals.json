@@ -1,0 +1,858 @@
+{
+  "name": "Approvals — Approve or Reject Queued Messages",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "65f908fe-b5f2-4735-99fe-122232cdbeae",
+      "name": "Process Approval",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "s1",
+              "name": "approval_id",
+              "value": "apr_appt_prac_oakwood_1:24h_1788731863338",
+              "type": "string"
+            },
+            {
+              "id": "s2",
+              "name": "decision",
+              "value": "approve",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e4128836-73d7-4c50-99d4-a487b3c4098a",
+      "name": "Scenario Input",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "12SDCpJjf9aNrnXP"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "approval_id",
+              "keyValue": "={{ $json.approval_id }}"
+            }
+          ]
+        }
+      },
+      "id": "fb645c47-49e3-40ac-84d7-e17224ab76b1",
+      "name": "Get Approval",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        448,
+        0
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.approval_id }}",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "680ec4ad-55cc-4043-b6d1-3e34a65cd31e",
+      "name": "Approval Found?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        672,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $('Get Approval').item.json.status }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "rightValue": "Pending"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "f5e21128-eb72-4465-92c7-50a055076caf",
+      "name": "Is Pending?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        912,
+        -208
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "anf1",
+              "name": "response",
+              "value": "I couldn't find an approval with that ID.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "823f3626-7955-4d3b-a0ea-f05e5196cad6",
+      "name": "Approval Not Found",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        912,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Scenario Input').item.json.decision }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "approve"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Scenario Input').item.json.decision }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "reject"
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "Unknown"
+        }
+      },
+      "id": "2c84cfee-86e2-4a3e-bd1e-b4571d143db8",
+      "name": "Decision",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1152,
+        -400
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ap1",
+              "name": "response",
+              "value": "={{ 'This approval was already processed - current status: ' + $('Get Approval').item.json.status + '.' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "fa14b234-ac26-4a39-b0ad-9da1a5dbc3df",
+      "name": "Already Processed",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1152,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "KC8u4siKTiTEmKOv"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "practice_id",
+              "keyValue": "={{ $('Get Approval').item.json.practice_id }}"
+            }
+          ]
+        }
+      },
+      "id": "03a6efd1-6049-4171-81ab-a345bf70b4bc",
+      "name": "Get Agents (Recheck)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1392,
+        -608
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "eoIjMXL38XqJVtKs"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "patient_id",
+              "keyValue": "={{ $('Get Approval').item.json.recipients }}"
+            }
+          ]
+        }
+      },
+      "id": "a9edc44d-8127-4fdf-8612-2195f83d40a6",
+      "name": "Get Patient (Recheck)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1632,
+        -608
+      ],
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const approval = $('Get Approval').first().json;\nconst agents = $('Get Agents (Recheck)').all().map(function(i){ return i.json; }).filter(function(r){ return r.agent_id; });\nconst nameToAgentId = { Ava: 'reception', Milo: 'support', Luna: 'reminders', Finn: 'waitlist', Iris: 'followup', Leo: 'operations' };\nconst agentId = nameToAgentId[approval.requested_by];\nconst agent = agents.find(function(a){ return a.agent_id === agentId; });\nconst agentEnabled = agent ? !!agent.enabled : false;\nconst patient = $('Get Patient (Recheck)').first().json;\nconst consentField = approval.kind === 'recall' ? 'consent_marketing' : 'consent_appointment';\nconst hasConsent = patient ? !!patient[consentField] : false;\nconst eligible = agentEnabled && hasConsent;\nconst reasons = [];\nif (!agentEnabled) reasons.push(approval.requested_by + ' is now paused.');\nif (!hasConsent) reasons.push('Patient no longer has the required consent.');\nreturn [{ json: { eligible: eligible, reasons: reasons.join(' ') } }];"
+      },
+      "id": "7769ec83-b880-4083-a9a9-42869034eab2",
+      "name": "Recheck Eligibility",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1872,
+        -608
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.eligible }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "9bd5eb0b-09c6-4f8e-aae7-f15da730c941",
+      "name": "Still Eligible?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2112,
+        -608
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "12SDCpJjf9aNrnXP"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "approval_id",
+              "keyValue": "={{ $('Get Approval').item.json.approval_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "status": "Approved"
+          }
+        },
+        "options": {}
+      },
+      "id": "35a047b7-9508-4efc-9c35-4bd6b090bcc7",
+      "name": "Mark Approved & Send",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        2352,
+        -752
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "Wc59RmscYiM6P62q"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "demo_session_id": "demo1",
+            "event_id": "={{ \"evt_\" + $now.toMillis() }}",
+            "practice_id": "={{ $('Get Approval').item.json.practice_id }}",
+            "type": "={{ $('Get Approval').item.json.kind + '_sent' }}",
+            "description": "={{ 'Simulated ' + $('Get Approval').item.json.kind + ' message sent to ' + $('Get Approval').item.json.recipients }}",
+            "related_id": "={{ $('Get Approval').item.json.approval_id }}",
+            "created_at": "={{ $now.toISO() }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "778dfcac-6e9a-474a-9f4a-5334921340fc",
+      "name": "Log Sent Event",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        2592,
+        -752
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "sr1",
+              "name": "response",
+              "value": "={{ 'Approved. Simulated message sent: \"' + $('Get Approval').item.json.payload + '\"' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6dad8a52-2314-4f86-9e1f-878e64bea84f",
+      "name": "Sent Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2832,
+        -752
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "12SDCpJjf9aNrnXP"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "approval_id",
+              "keyValue": "={{ $('Get Approval').item.json.approval_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "status": "Rejected"
+          }
+        },
+        "options": {}
+      },
+      "id": "92c176c9-fcb4-4067-aed1-97a02b8cf45b",
+      "name": "Mark Auto-Rejected",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        2352,
+        -400
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "Wc59RmscYiM6P62q"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "demo_session_id": "demo1",
+            "event_id": "={{ \"evt_\" + $now.toMillis() }}",
+            "practice_id": "={{ $('Get Approval').item.json.practice_id }}",
+            "type": "approval_auto_rejected",
+            "description": "={{ 'Eligibility recheck failed for ' + $('Get Approval').item.json.approval_id + ': ' + $('Recheck Eligibility').item.json.reasons }}",
+            "related_id": "={{ $('Get Approval').item.json.approval_id }}",
+            "created_at": "={{ $now.toISO() }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "19a755da-2e79-4586-b11a-595c2288c08d",
+      "name": "Log Auto-Rejected Event",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        2592,
+        -400
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "arr1",
+              "name": "response",
+              "value": "={{ 'Approval could not be executed on recheck and was rejected: ' + $('Recheck Eligibility').item.json.reasons }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "bad26cf9-c0e5-4547-b099-75ec931aa062",
+      "name": "Auto-Rejected Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2832,
+        -400
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "12SDCpJjf9aNrnXP"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "approval_id",
+              "keyValue": "={{ $('Get Approval').item.json.approval_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "status": "Rejected"
+          }
+        },
+        "options": {}
+      },
+      "id": "9fc9f17f-3e60-4d0a-8790-85677fcb5a0f",
+      "name": "Mark Rejected (Manual)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1392,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "Wc59RmscYiM6P62q"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "demo_session_id": "demo1",
+            "event_id": "={{ \"evt_\" + $now.toMillis() }}",
+            "practice_id": "={{ $('Get Approval').item.json.practice_id }}",
+            "type": "approval_rejected",
+            "description": "={{ 'Staff rejected ' + $('Get Approval').item.json.kind + ' approval ' + $('Get Approval').item.json.approval_id }}",
+            "related_id": "={{ $('Get Approval').item.json.approval_id }}",
+            "created_at": "={{ $now.toISO() }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "9c3b5197-6993-42ef-8afe-39cee92a4253",
+      "name": "Log Rejected Event (Manual)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1632,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "rr1",
+              "name": "response",
+              "value": "Rejected. No message was sent to the patient.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "b2c52f03-4f77-4f97-9910-59df13f2723b",
+      "name": "Rejected Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1872,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ud1",
+              "name": "response",
+              "value": "Decision must be 'approve' or 'reject'.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "f6816362-8235-4c9f-9802-300a3d251572",
+      "name": "Unknown Decision",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1392,
+        208
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Process Approval": {
+      "main": [
+        [
+          {
+            "node": "Scenario Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scenario Input": {
+      "main": [
+        [
+          {
+            "node": "Get Approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Approval": {
+      "main": [
+        [
+          {
+            "node": "Approval Found?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Approval Found?": {
+      "main": [
+        [
+          {
+            "node": "Is Pending?",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Approval Not Found",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Pending?": {
+      "main": [
+        [
+          {
+            "node": "Decision",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Already Processed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Decision": {
+      "main": [
+        [
+          {
+            "node": "Get Agents (Recheck)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mark Rejected (Manual)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Unknown Decision",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Agents (Recheck)": {
+      "main": [
+        [
+          {
+            "node": "Get Patient (Recheck)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Patient (Recheck)": {
+      "main": [
+        [
+          {
+            "node": "Recheck Eligibility",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recheck Eligibility": {
+      "main": [
+        [
+          {
+            "node": "Still Eligible?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Still Eligible?": {
+      "main": [
+        [
+          {
+            "node": "Mark Approved & Send",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mark Auto-Rejected",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Approved & Send": {
+      "main": [
+        [
+          {
+            "node": "Log Sent Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Sent Event": {
+      "main": [
+        [
+          {
+            "node": "Sent Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Auto-Rejected": {
+      "main": [
+        [
+          {
+            "node": "Log Auto-Rejected Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Auto-Rejected Event": {
+      "main": [
+        [
+          {
+            "node": "Auto-Rejected Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Rejected (Manual)": {
+      "main": [
+        [
+          {
+            "node": "Log Rejected Event (Manual)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Rejected Event (Manual)": {
+      "main": [
+        [
+          {
+            "node": "Rejected Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "versionId": "8eeef2a0-0565-496a-abc3-6575e292f1d8",
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp",
+    "instanceId": "82666a06905407f68d06c73658cdfa99b6326fd9e24f210de55bcbd7bb7bdcf0"
+  },
+  "nodeGroups": [],
+  "id": "7nVBKKBawyClvP08",
+  "tags": []
+}

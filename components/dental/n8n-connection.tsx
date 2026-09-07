@@ -1,0 +1,26 @@
+'use client'
+
+import { useState } from 'react'
+import { Cable, Download, RefreshCw, LockKeyhole } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Field, FieldLabel } from '@/components/ui/field'
+import { useDemo } from './demo-provider'
+
+const exports = ['ava', 'milo', 'luna', 'finn', 'iris', 'leo', 'approvals', 'guided-demo', 'setup', 'state']
+export function N8nConnection() {
+  const { connected, setConnected, config, pending, ready, error, refresh, command, unlock } = useDemo()
+  const [key, setKey] = useState('')
+  const [unlockError, setUnlockError] = useState('')
+  const [unlocking, setUnlocking] = useState(false)
+  return <section aria-label="Demo backend connection" className="mb-6 rounded-xl border bg-card p-4 text-card-foreground">
+    <div className="flex flex-wrap items-center justify-between gap-3"><div className="flex items-center gap-3"><Cable className="size-5 text-primary" /><div><p className="font-medium">{connected ? 'Connected demo · n8n' : 'Local demo · this browser'}</p><p className="text-sm text-muted-foreground">{connected ? ready ? 'Shared workflow state loaded. All patient messages remain simulated.' : 'Finish setup below to load n8n records.' : 'Explore offline, or connect your hosted workflows.'}</p></div></div><div className="flex items-center gap-2"><label htmlFor="backend-mode" className="sr-only">Demo backend</label><select id="backend-mode" disabled={pending} value={connected ? 'n8n' : 'local'} onChange={e => setConnected(e.target.value === 'n8n')}><option value="local">Local demo</option><option value="n8n">Connected n8n</option></select>{connected && <Button variant="outline" size="icon" aria-label="Refresh n8n state" disabled={pending} onClick={() => void refresh()}><RefreshCw /></Button>}</div></div>
+    {connected && <div className="mt-4 flex flex-col gap-4">
+      {!!error && <p role="alert" className="rounded-lg border p-3 text-sm">{error}</p>}
+      {!config?.configured && <p role="status" className="notice">Setup required. Add {config?.missing?.join(', ') || 'the n8n environment variables'} through project Settings → Vars. No external database or AI subscription is needed.</p>}
+      {config?.configured && !config.unlocked && <form onSubmit={async e => { e.preventDefault(); setUnlocking(true); setUnlockError(''); try { await unlock(key); setKey('') } catch (e) { setUnlockError(e instanceof Error ? e.message : 'Unlock failed.') } finally { setUnlocking(false) } }}><Field><FieldLabel htmlFor="presenter-key">Presenter access key</FieldLabel><Input id="presenter-key" type="password" autoComplete="current-password" value={key} onChange={e => setKey(e.target.value)} required /></Field><Button className="mt-3" disabled={unlocking} type="submit"><LockKeyhole data-icon="inline-start" />{unlocking ? 'Unlocking…' : 'Unlock connected demo'}</Button>{unlockError && <p className="mt-2 text-sm" role="alert">{unlockError}</p>}</form>}
+      {config?.unlocked && !ready && <Button disabled={pending} onClick={() => void command({ workflow: 'setup', action: 'seed' })}>{pending ? 'Initializing…' : 'Initialize fictional session'}</Button>}
+      <details open={!config?.configured}><summary className="cursor-pointer text-sm font-medium">Import checklist & workflow downloads</summary><ol className="mt-3 list-decimal pl-5 text-sm leading-7"><li>Import the ten revised JSON files below into your existing n8n project. Keep the original workflows as backups.</li><li>In your existing Practices Data Table, add string columns <code>demo_session_id</code> and <code>dashboard_snapshot</code>. Keep the existing string <code>practice_id</code> column. Alternatively, create a dedicated table with these three columns.</li><li>Select that same table in both Data Table nodes of every revised workflow. These exports store one snapshot per presenter session; they do not overwrite or migrate your old flattened demo rows.</li><li>Create an n8n Header Auth credential: header name <code>X-DentalOS-Key</code>, with a random secret of at least 24 characters. Assign it to all ten Webhook nodes, then publish the workflows.</li><li>Set <code>N8N_WEBHOOK_BASE_URL</code> to your production webhook base, for example <code>https://your-instance.app.n8n.cloud/webhook</code>. Set <code>N8N_WEBHOOK_SECRET</code> to the matching Header Auth secret. Set <code>N8N_DEMO_ACCESS_KEY</code> to a separate presenter password of at least 16 characters.</li><li>Unlock here, then initialize fictional data. Keep deployment access protection enabled. Use one presenter and one action at a time; Data Tables do not provide transactional booking locks.</li></ol><div className="mt-4 flex flex-wrap gap-2">{exports.map(id => <a key={id} href={`/n8n/${id}.json`} download className="flex items-center gap-2 rounded-lg border px-3 py-2 text-sm capitalize hover:bg-muted"><Download className="size-4" />{id}</a>)}</div><p className="mt-3 text-sm leading-6 text-muted-foreground">Scripted agents, fictional data, fixed sample day: 7 September 2026. The connected backend runs in n8n, not a live clinical system. Session access expires after 12 hours; clearing cookies starts a new session. No real messages or calls are sent.</p></details>
+    </div>}
+  </section>
+}

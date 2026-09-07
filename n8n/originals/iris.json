@@ -1,0 +1,1455 @@
+{
+  "name": "Iris — Post-Visit Follow-up",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "66611d8d-82ec-447c-9312-f79e99c7bcf1",
+      "name": "Run Iris Demo",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "s1",
+              "name": "scenario",
+              "value": "send_followup",
+              "type": "string"
+            },
+            {
+              "id": "s2",
+              "name": "practice_id",
+              "value": "prac_oakwood",
+              "type": "string"
+            },
+            {
+              "id": "s3",
+              "name": "appointment_id",
+              "value": "appt_prac_oakwood_2",
+              "type": "string"
+            },
+            {
+              "id": "s4",
+              "name": "patient_reply",
+              "value": "everything_fine",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "881c2f30-5c0c-4158-b70c-64db5d116ca8",
+      "name": "Scenario Input",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "KC8u4siKTiTEmKOv"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "practice_id",
+              "keyValue": "={{ $json.practice_id }}"
+            }
+          ]
+        }
+      },
+      "id": "fa305ab7-33d5-4e91-921e-1c2e8bf03c73",
+      "name": "Get Agents (Practice)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        448,
+        0
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all().map(function(i){ return i.json; });\nconst iris = rows.find(function(r){ return r.agent_id === 'followup'; });\nreturn [{ json: { enabled: iris ? !!iris.enabled : false } }];"
+      },
+      "id": "9505f845-0420-45a1-909a-12a691112d15",
+      "name": "Extract Iris Status",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.enabled }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "b17bafb7-b057-4ccb-bec2-539e91d4adc6",
+      "name": "Iris Enabled?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        880,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $(\"Scenario Input\").item.json.scenario }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "send_followup"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $(\"Scenario Input\").item.json.scenario }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "patient_reply"
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "Unknown"
+        }
+      },
+      "id": "17872958-cee0-4082-83db-b2ae93f8731e",
+      "name": "Route Scenario",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1152,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ip1",
+              "name": "response",
+              "value": "Iris is currently paused for this practice. Follow-ups were not processed.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "09115943-da26-4520-831c-1c34467ff97f",
+      "name": "Iris Paused",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1152,
+        912
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "2bAmrhgGbNIsh23J"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "appointment_id",
+              "keyValue": "={{ $(\"Scenario Input\").item.json.appointment_id }}"
+            }
+          ]
+        }
+      },
+      "id": "45614bc0-5743-4df9-b235-f8a90e12a8e7",
+      "name": "Get Appointment (Followup)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1392,
+        -400
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.status }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "rightValue": "Completed"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "bf8ed958-d633-49a9-ac6d-f941bae64ebf",
+      "name": "Appointment Completed?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1632,
+        -400
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "eoIjMXL38XqJVtKs"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "patient_id",
+              "keyValue": "={{ $('Get Appointment (Followup)').item.json.patient_id }}"
+            }
+          ]
+        }
+      },
+      "id": "642fe650-8509-4594-afd3-4e08d4304229",
+      "name": "Get Patient (Followup)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1872,
+        -544
+      ],
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "nc1",
+              "name": "response",
+              "value": "That appointment isn't marked Completed yet, so no follow-up is due.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "dba8a725-b058-4b3a-a58b-6a3a9c1b8c27",
+      "name": "Not Completed Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1872,
+        -144
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.consent_appointment }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "9316c8e1-7fa3-48bf-950d-c46f98c5fda5",
+      "name": "Has Consent?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2112,
+        -544
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "Wc59RmscYiM6P62q"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "practice_id",
+              "keyValue": "={{ $('Get Appointment (Followup)').item.json.practice_id }}"
+            }
+          ]
+        }
+      },
+      "id": "a13b10d6-751a-4a6f-9efe-d40da6a8c472",
+      "name": "Get Prior Followup Events",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        2352,
+        -656
+      ],
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ncr1",
+              "name": "response",
+              "value": "This patient hasn't given communication consent, so no follow-up was sent.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c51ba3e3-292d-47ff-af1c-ebb73f045c93",
+      "name": "No Consent Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2352,
+        -304
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const appt = $('Get Appointment (Followup)').first().json;\nconst events = $input.all().map(function(i){ return i.json; }).filter(function(r){ return r.event_id && r.type === 'followup_sent' && r.related_id === appt.appointment_id; });\nreturn [{ json: { already_sent: events.length > 0 } }];"
+      },
+      "id": "a40d28eb-51d5-4385-b5a5-8a786eda52d3",
+      "name": "Already Sent Check",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2592,
+        -656
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.already_sent }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "f4340bdd-9fff-4854-b2bf-beab479b0900",
+      "name": "Already Sent?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2832,
+        -656
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "as1",
+              "name": "response",
+              "value": "A follow-up for this appointment has already been sent.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "62a6f747-72f1-4e20-8269-b388cdb76c2e",
+      "name": "Already Sent Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3072,
+        -448
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "MRKwUO4mxr4zBU0Q"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "practice_id",
+              "keyValue": "={{ $('Get Appointment (Followup)').item.json.practice_id }}"
+            }
+          ]
+        }
+      },
+      "id": "f117f19e-1c10-456a-b5e2-3a23a4a3a4ec",
+      "name": "Get Conversation (Followup)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        3072,
+        -800
+      ],
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const appt = $('Get Appointment (Followup)').first().json;\nconst rows = $input.all().map(function(i){ return i.json; }).filter(function(r){ return r.conversation_id; });\nconst existing = rows.find(function(r){ return r.patient_id === appt.patient_id; });\nconst convId = existing ? existing.conversation_id : 'conv_' + appt.practice_id + '_' + appt.patient_id + '_' + Date.now();\nreturn [{ json: { conversation_id: convId, is_new: !existing } }];"
+      },
+      "id": "0904dd50-0927-41a9-a9a7-8fd8512fca86",
+      "name": "Resolve Conversation ID (Followup)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3312,
+        -800
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.is_new }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "a59d9fec-deeb-4261-8d78-0806064f7e58",
+      "name": "New Conversation? (Followup)",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        3552,
+        -800
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "MRKwUO4mxr4zBU0Q"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "demo_session_id": "demo1",
+            "conversation_id": "={{ $json.conversation_id }}",
+            "practice_id": "={{ $('Get Appointment (Followup)').item.json.practice_id }}",
+            "patient_id": "={{ $('Get Appointment (Followup)').item.json.patient_id }}",
+            "channel": "WhatsApp",
+            "status": "Agent handling",
+            "last_message": "Thank you for visiting. Would you like our team to contact you?",
+            "assigned_to": "",
+            "updated_at": "={{ $now.toISO() }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "2ee4c194-ca87-457d-b5a5-72e4157104ca",
+      "name": "Insert New Conversation (Followup)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        3792,
+        -896
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "MRKwUO4mxr4zBU0Q"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "conversation_id",
+              "keyValue": "={{ $json.conversation_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "status": "Agent handling",
+            "last_message": "Thank you for visiting. Would you like our team to contact you?",
+            "updated_at": "={{ $now.toISO() }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "e5831503-b595-4ba0-b1f7-bfab5df33ff0",
+      "name": "Update Existing Conversation (Followup)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        3792,
+        -704
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "Wc59RmscYiM6P62q"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "demo_session_id": "demo1",
+            "event_id": "={{ \"evt_\" + $now.toMillis() }}",
+            "practice_id": "={{ $('Get Appointment (Followup)').item.json.practice_id }}",
+            "type": "followup_sent",
+            "description": "={{ 'Iris sent follow-up for appointment ' + $('Get Appointment (Followup)').item.json.appointment_id }}",
+            "related_id": "={{ $('Get Appointment (Followup)').item.json.appointment_id }}",
+            "created_at": "={{ $now.toISO() }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "3f85659d-6b27-430c-afcc-97b3757f277c",
+      "name": "Log Followup Sent Event",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        4032,
+        -800
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fsr1",
+              "name": "response",
+              "value": "Thank you for visiting. Would you like our team to contact you? (Simulated message sent.)",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2b292e57-bb03-4421-85bd-8a06ea751bbe",
+      "name": "Followup Sent Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        4272,
+        -800
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "2bAmrhgGbNIsh23J"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "appointment_id",
+              "keyValue": "={{ $(\"Scenario Input\").item.json.appointment_id }}"
+            }
+          ]
+        }
+      },
+      "id": "45ae0f77-e1a4-46bd-9a7e-3113cce4879b",
+      "name": "Get Appointment (Reply)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1392,
+        304
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $(\"Scenario Input\").item.json.patient_reply }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "everything_fine"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $(\"Scenario Input\").item.json.patient_reply }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "wants_booking"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $(\"Scenario Input\").item.json.patient_reply }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "has_concern"
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "Unrecognized"
+        }
+      },
+      "id": "67c1fbe4-2b0b-48a1-b42c-a36ad0f6ecb0",
+      "name": "Route Patient Reply",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1632,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "prr1",
+              "name": "response",
+              "value": "Glad to hear it! Recorded and marked resolved.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8dc60b22-ec75-49fb-9f36-d72e4fc556bf",
+      "name": "Positive Reply - Resolved",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1872,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "brr1",
+              "name": "response",
+              "value": "Sounds good - I'll connect you with Ava to get that booked.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "23d76a81-6f2d-4536-bd34-cc52cf749ddc",
+      "name": "Booking Request - Routed to Ava",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1872,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "MRKwUO4mxr4zBU0Q"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "practice_id",
+              "keyValue": "={{ $('Get Appointment (Reply)').item.json.practice_id }}"
+            }
+          ]
+        }
+      },
+      "id": "47e9f8fd-f57a-4a74-a0c0-60af190ebfbf",
+      "name": "Get Conversation (Concern)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1872,
+        512
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const appt = $('Get Appointment (Reply)').first().json;\nconst rows = $input.all().map(function(i){ return i.json; }).filter(function(r){ return r.conversation_id; });\nconst existing = rows.find(function(r){ return r.patient_id === appt.patient_id; });\nconst convId = existing ? existing.conversation_id : 'conv_' + appt.practice_id + '_' + appt.patient_id + '_' + Date.now();\nreturn [{ json: { conversation_id: convId, is_new: !existing } }];"
+      },
+      "id": "ec25b4e1-9d85-4674-a144-7622e1d2998a",
+      "name": "Resolve Conversation ID (Concern)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2112,
+        512
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.is_new }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "4712d1ea-31a7-4618-9ca2-1bd8c20cbbe7",
+      "name": "New Conversation? (Concern)",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2352,
+        512
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "MRKwUO4mxr4zBU0Q"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "demo_session_id": "demo1",
+            "conversation_id": "={{ $json.conversation_id }}",
+            "practice_id": "={{ $('Get Appointment (Reply)').item.json.practice_id }}",
+            "patient_id": "={{ $('Get Appointment (Reply)').item.json.patient_id }}",
+            "channel": "WhatsApp",
+            "status": "Needs attention",
+            "last_message": "I need to speak to someone about a concern.",
+            "assigned_to": "",
+            "updated_at": "={{ $now.toISO() }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "5d3bf015-a9ca-4bf6-9d2e-18d6fee3ad72",
+      "name": "Insert New Conversation (Concern)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        2592,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "MRKwUO4mxr4zBU0Q"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "conversation_id",
+              "keyValue": "={{ $json.conversation_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "status": "Needs attention",
+            "last_message": "I need to speak to someone about a concern.",
+            "updated_at": "={{ $now.toISO() }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "56187eed-8f2c-47c1-8741-3c5362389e5a",
+      "name": "Update Existing Conversation (Concern)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        2592,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "Wc59RmscYiM6P62q"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "demo_session_id": "demo1",
+            "event_id": "={{ \"evt_\" + $now.toMillis() }}",
+            "practice_id": "={{ $('Get Appointment (Reply)').item.json.practice_id }}",
+            "type": "clinical_escalation",
+            "description": "Patient raised a concern after a completed visit - needs staff review. Unassigned.",
+            "related_id": "={{ $('Resolve Conversation ID (Concern)').item.json.conversation_id }}",
+            "created_at": "={{ $now.toISO() }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "b4b3aa7c-8e4f-4394-a3f5-b64c1a324b42",
+      "name": "Log Concern Task",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        2832,
+        512
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "cr1",
+              "name": "response",
+              "value": "I'm not able to give medical advice, but I've flagged this for our clinical team right away.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "879726d6-eb26-4e6e-b37f-01a0118753ff",
+      "name": "Concern - Escalated",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3072,
+        512
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ur1",
+              "name": "response",
+              "value": "For this demo, patient_reply should be one of: everything_fine, wants_booking, has_concern.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "22930a7a-1524-4328-9adc-1610825eb478",
+      "name": "Unrecognized Reply",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1872,
+        752
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "u1",
+              "name": "response",
+              "value": "Unknown scenario. Use send_followup or patient_reply.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "5b24f0ba-cbaa-4a50-9df4-7cb7a560734e",
+      "name": "Unknown Scenario",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1392,
+        912
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Run Iris Demo": {
+      "main": [
+        [
+          {
+            "node": "Scenario Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scenario Input": {
+      "main": [
+        [
+          {
+            "node": "Get Agents (Practice)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Agents (Practice)": {
+      "main": [
+        [
+          {
+            "node": "Extract Iris Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Iris Status": {
+      "main": [
+        [
+          {
+            "node": "Iris Enabled?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Iris Enabled?": {
+      "main": [
+        [
+          {
+            "node": "Route Scenario",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Iris Paused",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Scenario": {
+      "main": [
+        [
+          {
+            "node": "Get Appointment (Followup)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Appointment (Reply)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Unknown Scenario",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Appointment (Followup)": {
+      "main": [
+        [
+          {
+            "node": "Appointment Completed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Appointment Completed?": {
+      "main": [
+        [
+          {
+            "node": "Get Patient (Followup)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Not Completed Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Patient (Followup)": {
+      "main": [
+        [
+          {
+            "node": "Has Consent?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Has Consent?": {
+      "main": [
+        [
+          {
+            "node": "Get Prior Followup Events",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Consent Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Prior Followup Events": {
+      "main": [
+        [
+          {
+            "node": "Already Sent Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Already Sent Check": {
+      "main": [
+        [
+          {
+            "node": "Already Sent?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Already Sent?": {
+      "main": [
+        [
+          {
+            "node": "Already Sent Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Conversation (Followup)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Conversation (Followup)": {
+      "main": [
+        [
+          {
+            "node": "Resolve Conversation ID (Followup)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resolve Conversation ID (Followup)": {
+      "main": [
+        [
+          {
+            "node": "New Conversation? (Followup)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "New Conversation? (Followup)": {
+      "main": [
+        [
+          {
+            "node": "Insert New Conversation (Followup)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update Existing Conversation (Followup)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert New Conversation (Followup)": {
+      "main": [
+        [
+          {
+            "node": "Log Followup Sent Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Existing Conversation (Followup)": {
+      "main": [
+        [
+          {
+            "node": "Log Followup Sent Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Followup Sent Event": {
+      "main": [
+        [
+          {
+            "node": "Followup Sent Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Appointment (Reply)": {
+      "main": [
+        [
+          {
+            "node": "Route Patient Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Patient Reply": {
+      "main": [
+        [
+          {
+            "node": "Positive Reply - Resolved",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Booking Request - Routed to Ava",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Conversation (Concern)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Unrecognized Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Conversation (Concern)": {
+      "main": [
+        [
+          {
+            "node": "Resolve Conversation ID (Concern)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Resolve Conversation ID (Concern)": {
+      "main": [
+        [
+          {
+            "node": "New Conversation? (Concern)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "New Conversation? (Concern)": {
+      "main": [
+        [
+          {
+            "node": "Insert New Conversation (Concern)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Update Existing Conversation (Concern)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert New Conversation (Concern)": {
+      "main": [
+        [
+          {
+            "node": "Log Concern Task",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Existing Conversation (Concern)": {
+      "main": [
+        [
+          {
+            "node": "Log Concern Task",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Concern Task": {
+      "main": [
+        [
+          {
+            "node": "Concern - Escalated",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "versionId": "f060ce67-5fbd-4503-a158-6062838c76c7",
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp",
+    "instanceId": "82666a06905407f68d06c73658cdfa99b6326fd9e24f210de55bcbd7bb7bdcf0"
+  },
+  "nodeGroups": [],
+  "id": "2pX6Hu21KkF0mHYW",
+  "tags": []
+}

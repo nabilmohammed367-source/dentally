@@ -1,0 +1,1371 @@
+{
+  "name": "Finn — Waitlist Coordinator",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "38dbe19f-70aa-4c35-84b1-cd127430a850",
+      "name": "Run Finn Demo",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "s1",
+              "name": "scenario",
+              "value": "find_match",
+              "type": "string"
+            },
+            {
+              "id": "s2",
+              "name": "practice_id",
+              "value": "prac_oakwood",
+              "type": "string"
+            },
+            {
+              "id": "s3",
+              "name": "appointment_id",
+              "value": "appt_prac_oakwood_3",
+              "type": "string"
+            },
+            {
+              "id": "s4",
+              "name": "waitlist_id",
+              "value": "",
+              "type": "string"
+            },
+            {
+              "id": "s5",
+              "name": "approval_id",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1788a37b-6f0e-4195-ad2e-c98960b4584d",
+      "name": "Scenario Input",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "KC8u4siKTiTEmKOv"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "practice_id",
+              "keyValue": "={{ $json.practice_id }}"
+            }
+          ]
+        }
+      },
+      "id": "9a49bef4-15d6-49db-82f7-cdeebad71d53",
+      "name": "Get Agents (Practice)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        448,
+        0
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all().map(function(i){ return i.json; });\nconst finn = rows.find(function(r){ return r.agent_id === 'waitlist'; });\nreturn [{ json: { enabled: finn ? !!finn.enabled : false } }];"
+      },
+      "id": "302bbd48-e0d4-4701-9bcf-cfaa2e4c7459",
+      "name": "Extract Finn Status",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.enabled }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "629832bc-729f-448e-a29c-6d8828942ea9",
+      "name": "Finn Enabled?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        880,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $(\"Scenario Input\").item.json.scenario }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "find_match"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $(\"Scenario Input\").item.json.scenario }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "simulate_accept"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $(\"Scenario Input\").item.json.scenario }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "rightValue": "simulate_decline"
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "Unknown"
+        }
+      },
+      "id": "3d23f814-bca6-46bb-81d2-a68e612debd5",
+      "name": "Route Scenario",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        1152,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fp1",
+              "name": "response",
+              "value": "Finn is currently paused for this practice. Waitlist offers were not processed.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "688c3c87-33f7-4a5a-8918-83a8aaa688bc",
+      "name": "Finn Paused",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1152,
+        912
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "2bAmrhgGbNIsh23J"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "appointment_id",
+              "keyValue": "={{ $(\"Scenario Input\").item.json.appointment_id }}"
+            }
+          ]
+        }
+      },
+      "id": "a1b18446-66e2-4ff5-8b90-38d77fd6ad57",
+      "name": "Get Released Appointment",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1392,
+        -496
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.status }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "rightValue": "Cancelled"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "59c0a869-ff9e-42b7-b17f-e42248595bec",
+      "name": "Slot Is Released?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1632,
+        -496
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "LVUcjXcAUvgcRFMf"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "practice_id",
+              "keyValue": "={{ $('Get Released Appointment').item.json.practice_id }}"
+            }
+          ]
+        }
+      },
+      "id": "7d07d4fc-dc49-4921-9285-d1489035f39a",
+      "name": "Get Waitlist Entries",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1872,
+        -608
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "eoIjMXL38XqJVtKs"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "practice_id",
+              "keyValue": "={{ $('Get Released Appointment').item.json.practice_id }}"
+            }
+          ]
+        }
+      },
+      "id": "933c0563-568e-4f08-a22c-a288445274b9",
+      "name": "Get Patients (Finn)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        2112,
+        -608
+      ],
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const appt = $('Get Released Appointment').first().json;\nconst waitlist = $('Get Waitlist Entries').all().map(function(i){ return i.json; }).filter(function(r){ return r.waitlist_id && r.status === 'Waiting' && r.treatment === appt.treatment; });\nconst patients = $('Get Patients (Finn)').all().map(function(i){ return i.json; }).filter(function(r){ return r.patient_id; });\nwaitlist.sort(function(a, b){ return new Date(a.joined_at) - new Date(b.joined_at); });\nconst best = waitlist[0];\nif (!best) { return [{ json: { found: false, response: 'No matching waitlist patients for ' + appt.treatment + ' at this practice.' } }]; }\nconst patient = patients.find(function(p){ return p.patient_id === best.patient_id; });\nconst patientName = patient ? patient.name : best.patient_id;\nconst message = 'Hi ' + patientName + ', a ' + appt.treatment + ' slot just opened up on ' + appt.start_time + '. Would you like to take it?';\nreturn [{ json: { found: true, waitlist_id: best.waitlist_id, patient_id: best.patient_id, patient_name: patientName, treatment: appt.treatment, message: message, response: 'Best match: ' + patientName + ' (waitlist_id ' + best.waitlist_id + ', joined ' + best.joined_at + '). Invitation queued for approval.' } }];"
+      },
+      "id": "acc7404d-f78b-4038-918b-303fab12339e",
+      "name": "Find Best Candidate",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2352,
+        -608
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.found }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "d89bfc01-401a-400b-a473-4e85a74738f0",
+      "name": "Candidate Found?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2592,
+        -608
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const c = $json;\nconst appt = $('Get Released Appointment').first().json;\nreturn [{ json: { demo_session_id: 'demo1', approval_id: 'apr_wl_' + c.waitlist_id + '_' + Date.now(), practice_id: appt.practice_id, kind: 'waitlist', status: 'Pending', payload: c.message, recipients: c.patient_id, requested_by: 'Finn', created_at: new Date().toISOString() } }];"
+      },
+      "id": "1e7c33e8-0d61-4b63-8775-2b8f2633d3e0",
+      "name": "Build Waitlist Approval",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2832,
+        -704
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "12SDCpJjf9aNrnXP"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": []
+        },
+        "options": {}
+      },
+      "id": "62a3253f-f9f9-473b-bbaa-ca773a801162",
+      "name": "Insert Waitlist Approval",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        3072,
+        -704
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "fmr1",
+              "name": "response",
+              "value": "={{ $('Find Best Candidate').item.json.response }}",
+              "type": "string"
+            },
+            {
+              "id": "fmr2",
+              "name": "approval_id",
+              "value": "={{ $('Build Waitlist Approval').item.json.approval_id }}",
+              "type": "string"
+            },
+            {
+              "id": "fmr3",
+              "name": "waitlist_id",
+              "value": "={{ $('Find Best Candidate').item.json.waitlist_id }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ea8c3012-3ffd-46c4-9f30-c07041f5591b",
+      "name": "Find Match Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3312,
+        -704
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "nc1",
+              "name": "response",
+              "value": "={{ $json.response }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "42b7cf10-77f2-45a0-9f51-69a1437b991e",
+      "name": "No Candidate Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2832,
+        -352
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "snr1",
+              "name": "response",
+              "value": "That appointment isn't cancelled, so there's no released slot to fill.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2b0f6ee5-72af-4adc-a854-b066c1b8ae49",
+      "name": "Slot Not Released",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1872,
+        -256
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "12SDCpJjf9aNrnXP"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "approval_id",
+              "keyValue": "={{ $('Scenario Input').item.json.approval_id }}"
+            }
+          ]
+        }
+      },
+      "id": "a6b6f3f2-b378-41cd-a022-b6fb57f00ae2",
+      "name": "Get Approval (Accept)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1392,
+        0
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "LVUcjXcAUvgcRFMf"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "waitlist_id",
+              "keyValue": "={{ $('Scenario Input').item.json.waitlist_id }}"
+            }
+          ]
+        }
+      },
+      "id": "e48550fb-7665-4ea7-bd05-19ffd80c12f7",
+      "name": "Get Waitlist Entry (Accept)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1632,
+        0
+      ],
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "2bAmrhgGbNIsh23J"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "appointment_id",
+              "keyValue": "={{ $('Scenario Input').item.json.appointment_id }}"
+            }
+          ]
+        }
+      },
+      "id": "ac7cca99-2b31-455a-abb7-ab7a63fd564b",
+      "name": "Get Appointment (Accept)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1872,
+        0
+      ],
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const approval = $('Get Approval (Accept)').first().json;\nconst waitlistEntry = $('Get Waitlist Entry (Accept)').first().json;\nconst appt = $('Get Appointment (Accept)').first().json;\nconst valid = approval.approval_id && approval.status === 'Pending' && waitlistEntry.waitlist_id && waitlistEntry.status === 'Waiting' && appt.appointment_id && appt.status === 'Cancelled';\nreturn [{ json: { valid: !!valid } }];"
+      },
+      "id": "17231252-de0c-48f8-a0e7-477dc249fea2",
+      "name": "Validate Offer Still Valid",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2112,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.valid }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "ca62786c-439e-4f9d-841e-d723e622389c",
+      "name": "Offer Still Valid?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        2352,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const waitlistEntry = $('Get Waitlist Entry (Accept)').first().json;\nconst appt = $('Get Appointment (Accept)').first().json;\nreturn [{ json: { demo_session_id: 'demo1', appointment_id: 'appt_' + appt.practice_id + '_' + Date.now(), practice_id: appt.practice_id, patient_id: waitlistEntry.patient_id, provider: appt.provider, chair: appt.chair, treatment: waitlistEntry.treatment, start_time: appt.start_time, end_time: appt.end_time, status: 'Confirmed', version: 1 } }];"
+      },
+      "id": "4cb005f1-8089-4ea0-9f43-284c190d468a",
+      "name": "Build Filled Appointment",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2592,
+        -144
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "2bAmrhgGbNIsh23J"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": []
+        },
+        "options": {}
+      },
+      "id": "00df3fe6-4b09-4a1d-ab49-fd466a89c115",
+      "name": "Insert Filled Appointment",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        2832,
+        -144
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "LVUcjXcAUvgcRFMf"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "waitlist_id",
+              "keyValue": "={{ $('Get Waitlist Entry (Accept)').item.json.waitlist_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "status": "Filled"
+          }
+        },
+        "options": {}
+      },
+      "id": "d5c51c5a-f2b2-4f44-a0f9-6c4a5543d368",
+      "name": "Mark Waitlist Filled",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        3072,
+        -144
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "12SDCpJjf9aNrnXP"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "approval_id",
+              "keyValue": "={{ $('Get Approval (Accept)').item.json.approval_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "status": "Approved"
+          }
+        },
+        "options": {}
+      },
+      "id": "4992241d-2043-4f41-81f2-bc2acadea1f3",
+      "name": "Mark Approval Approved",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        3312,
+        -144
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "Wc59RmscYiM6P62q"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "demo_session_id": "demo1",
+            "event_id": "={{ \"evt_\" + $now.toMillis() }}",
+            "practice_id": "={{ $('Get Appointment (Accept)').item.json.practice_id }}",
+            "type": "waitlist.filled",
+            "description": "={{ 'Finn filled slot ' + $('Get Appointment (Accept)').item.json.appointment_id + ' from waitlist ' + $('Get Waitlist Entry (Accept)').item.json.waitlist_id }}",
+            "related_id": "={{ $('Build Filled Appointment').item.json.appointment_id }}",
+            "created_at": "={{ $now.toISO() }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "122ef727-6b5b-473a-80cc-c725e98dd2b0",
+      "name": "Log Waitlist Filled Event",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        3552,
+        -144
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ac1",
+              "name": "response",
+              "value": "={{ 'The waitlist patient accepted and is now booked for ' + $('Build Filled Appointment').item.json.start_time + '.' }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c777700f-5ac7-4eed-bfa4-bcf2f89c62ef",
+      "name": "Accept Confirmed",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        3792,
+        -144
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "onv1",
+              "name": "response",
+              "value": "That offer, waitlist entry, or slot is no longer valid - it may have already been filled or declined.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "204ddea1-df48-4f0d-8b70-4147704fb57c",
+      "name": "Offer No Longer Valid",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2592,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "12SDCpJjf9aNrnXP"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "approval_id",
+              "keyValue": "={{ $('Scenario Input').item.json.approval_id }}"
+            }
+          ]
+        }
+      },
+      "id": "1fd51d47-cf49-4a00-8aef-dd0b303392a8",
+      "name": "Get Approval (Decline)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1392,
+        608
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "LVUcjXcAUvgcRFMf"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "waitlist_id",
+              "keyValue": "={{ $('Scenario Input').item.json.waitlist_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "status": "Declined"
+          }
+        },
+        "options": {}
+      },
+      "id": "60c021be-5783-482b-8155-87ae21353e58",
+      "name": "Mark Waitlist Declined",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1632,
+        608
+      ],
+      "executeOnce": true
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "12SDCpJjf9aNrnXP"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "approval_id",
+              "keyValue": "={{ $('Get Approval (Decline)').item.json.approval_id }}"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "status": "Rejected"
+          }
+        },
+        "options": {}
+      },
+      "id": "4c3b039b-0ea3-4cc3-b2b7-e6c547c45d21",
+      "name": "Mark Approval Rejected",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1872,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "Wc59RmscYiM6P62q"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "demo_session_id": "demo1",
+            "event_id": "={{ \"evt_\" + $now.toMillis() }}",
+            "practice_id": "={{ $('Scenario Input').item.json.practice_id }}",
+            "type": "waitlist.declined",
+            "description": "={{ 'Waitlist offer declined for ' + $('Scenario Input').item.json.waitlist_id }}",
+            "related_id": "={{ $('Scenario Input').item.json.waitlist_id }}",
+            "created_at": "={{ $now.toISO() }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "ca965f0f-55a1-4a9d-b661-7de1d329db32",
+      "name": "Log Waitlist Declined Event",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        2112,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "dc1",
+              "name": "response",
+              "value": "Noted as declined. Run find_match again on the same appointment to offer the slot to the next eligible waitlist patient.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "16b75261-ecd1-4e54-bb8f-54662b104510",
+      "name": "Decline Confirmed",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2352,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "u1",
+              "name": "response",
+              "value": "Unknown scenario. Use find_match, simulate_accept, or simulate_decline.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1cb04cc7-a203-4d55-a5c5-81f2a0db21e6",
+      "name": "Unknown Scenario",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1392,
+        1104
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Run Finn Demo": {
+      "main": [
+        [
+          {
+            "node": "Scenario Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scenario Input": {
+      "main": [
+        [
+          {
+            "node": "Get Agents (Practice)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Agents (Practice)": {
+      "main": [
+        [
+          {
+            "node": "Extract Finn Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Finn Status": {
+      "main": [
+        [
+          {
+            "node": "Finn Enabled?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Finn Enabled?": {
+      "main": [
+        [
+          {
+            "node": "Route Scenario",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Finn Paused",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Scenario": {
+      "main": [
+        [
+          {
+            "node": "Get Released Appointment",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Approval (Accept)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Approval (Decline)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Unknown Scenario",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Released Appointment": {
+      "main": [
+        [
+          {
+            "node": "Slot Is Released?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Slot Is Released?": {
+      "main": [
+        [
+          {
+            "node": "Get Waitlist Entries",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Slot Not Released",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Waitlist Entries": {
+      "main": [
+        [
+          {
+            "node": "Get Patients (Finn)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Patients (Finn)": {
+      "main": [
+        [
+          {
+            "node": "Find Best Candidate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Find Best Candidate": {
+      "main": [
+        [
+          {
+            "node": "Candidate Found?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Candidate Found?": {
+      "main": [
+        [
+          {
+            "node": "Build Waitlist Approval",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Candidate Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Waitlist Approval": {
+      "main": [
+        [
+          {
+            "node": "Insert Waitlist Approval",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Waitlist Approval": {
+      "main": [
+        [
+          {
+            "node": "Find Match Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Approval (Accept)": {
+      "main": [
+        [
+          {
+            "node": "Get Waitlist Entry (Accept)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Waitlist Entry (Accept)": {
+      "main": [
+        [
+          {
+            "node": "Get Appointment (Accept)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Appointment (Accept)": {
+      "main": [
+        [
+          {
+            "node": "Validate Offer Still Valid",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Offer Still Valid": {
+      "main": [
+        [
+          {
+            "node": "Offer Still Valid?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Offer Still Valid?": {
+      "main": [
+        [
+          {
+            "node": "Build Filled Appointment",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Offer No Longer Valid",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Filled Appointment": {
+      "main": [
+        [
+          {
+            "node": "Insert Filled Appointment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Filled Appointment": {
+      "main": [
+        [
+          {
+            "node": "Mark Waitlist Filled",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Waitlist Filled": {
+      "main": [
+        [
+          {
+            "node": "Mark Approval Approved",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Approval Approved": {
+      "main": [
+        [
+          {
+            "node": "Log Waitlist Filled Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Waitlist Filled Event": {
+      "main": [
+        [
+          {
+            "node": "Accept Confirmed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Approval (Decline)": {
+      "main": [
+        [
+          {
+            "node": "Mark Waitlist Declined",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Waitlist Declined": {
+      "main": [
+        [
+          {
+            "node": "Mark Approval Rejected",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Approval Rejected": {
+      "main": [
+        [
+          {
+            "node": "Log Waitlist Declined Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Waitlist Declined Event": {
+      "main": [
+        [
+          {
+            "node": "Decline Confirmed",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "versionId": "39d97261-ead1-4673-99fc-67d49a2f3b24",
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp",
+    "instanceId": "82666a06905407f68d06c73658cdfa99b6326fd9e24f210de55bcbd7bb7bdcf0"
+  },
+  "nodeGroups": [],
+  "id": "HMmeve259bB8ph6P",
+  "tags": []
+}

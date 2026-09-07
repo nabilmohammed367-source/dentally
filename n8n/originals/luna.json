@@ -1,0 +1,573 @@
+{
+  "name": "Luna — Reminders & Recall",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "53653829-72c8-4a0b-9a09-4cb06a1d5404",
+      "name": "Preview Reminders & Recall",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d1",
+              "name": "practice_id",
+              "value": "prac_oakwood",
+              "type": "string"
+            },
+            {
+              "id": "d2",
+              "name": "as_of_override",
+              "value": "",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "98e6e812-2055-48d0-a188-5ecc51d14dc6",
+      "name": "Demo Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "KC8u4siKTiTEmKOv"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "practice_id",
+              "keyValue": "={{ $json.practice_id }}"
+            }
+          ]
+        }
+      },
+      "id": "4eea733d-e952-49dd-8740-26280b664cfa",
+      "name": "Get Agents (Practice)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        448,
+        0
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all().map(function(i){ return i.json; });\nconst luna = rows.find(function(r){ return r.agent_id === 'reminders'; });\nreturn [{ json: { enabled: luna ? !!luna.enabled : false } }];"
+      },
+      "id": "9d589fbb-a1e5-451e-af1d-be0637f5bcd9",
+      "name": "Extract Luna Status",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.enabled }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "4931d6ba-a2d0-4128-b371-07b5b68316ff",
+      "name": "Luna Enabled?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        880,
+        0
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "1481c69b-7ac5-497c-9498-6b311956f8df",
+      "name": "Start Reminder Calc",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1152,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "lp1",
+              "name": "response",
+              "value": "Luna is currently paused for this practice. No reminders or recall previews were generated.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "704383c9-9412-4edc-b10f-cb81861b2329",
+      "name": "Luna Paused",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1152,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "2bAmrhgGbNIsh23J"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "practice_id",
+              "keyValue": "={{ $('Demo Config').item.json.practice_id }}"
+            }
+          ]
+        }
+      },
+      "id": "0f4e899c-471d-4c09-8f26-d96670e142f7",
+      "name": "Get Appointments (Reminders)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1392,
+        -304
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "eoIjMXL38XqJVtKs"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "practice_id",
+              "keyValue": "={{ $('Demo Config').item.json.practice_id }}"
+            }
+          ]
+        }
+      },
+      "id": "301ea54f-fa55-4aeb-be8e-2a985ac517c0",
+      "name": "Get Patients (Reminders)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1392,
+        0
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "Wc59RmscYiM6P62q"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "practice_id",
+              "keyValue": "={{ $('Demo Config').item.json.practice_id }}"
+            }
+          ]
+        }
+      },
+      "id": "9ace0c86-57b3-4dcb-bf37-a15c134e9963",
+      "name": "Get Prior Reminder Events",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1392,
+        304
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "numberInputs": 3,
+        "options": {}
+      },
+      "id": "4e65ad7f-91d7-4f93-8345-39a1d01ef135",
+      "name": "Wait For All Data",
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        1648,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const config = $('Demo Config').first().json;\nconst now = config.as_of_override ? new Date(config.as_of_override) : new Date();\nconst appts = $('Get Appointments (Reminders)').all().map(function(i){ return i.json; }).filter(function(r){ return r.appointment_id && r.status === 'Confirmed'; });\nconst patients = $('Get Patients (Reminders)').all().map(function(i){ return i.json; }).filter(function(r){ return r.patient_id; });\nconst priorEvents = $('Get Prior Reminder Events').all().map(function(i){ return i.json; }).filter(function(r){ return r.event_id && r.type === 'reminder_prepared'; });\nfunction patientById(id){ return patients.find(function(p){ return p.patient_id === id; }); }\nfunction alreadyPrepared(relatedId, tag){ return priorEvents.some(function(e){ return e.related_id === relatedId && e.description && e.description.indexOf(tag) !== -1; }); }\nconst stages = [ { key: '48h', minH: 36, maxH: 60 }, { key: '24h', minH: 12, maxH: 36 } ];\nconst eligibleReminders = []; const skippedReminders = [];\nappts.forEach(function(a){\n  const start = new Date(a.start_time);\n  const hoursUntil = (start - now) / 3600000;\n  const patient = patientById(a.patient_id);\n  stages.forEach(function(s){\n    if (hoursUntil >= s.minH && hoursUntil < s.maxH) {\n      const tag = a.appointment_id + ':' + s.key;\n      if (!patient) { skippedReminders.push({ appointment_id: a.appointment_id, stage: s.key, reason: 'Patient not found' }); return; }\n      if (!patient.consent_appointment) { skippedReminders.push({ appointment_id: a.appointment_id, stage: s.key, reason: 'No appointment consent' }); return; }\n      if (alreadyPrepared(a.appointment_id, s.key)) { skippedReminders.push({ appointment_id: a.appointment_id, stage: s.key, reason: 'Already prepared' }); return; }\n      eligibleReminders.push({ appointment_id: a.appointment_id, patient_id: a.patient_id, stage: s.key, start_time: a.start_time, treatment: a.treatment, tag: tag, message: 'Reminder: your ' + a.treatment + ' appointment is on ' + start.toISOString() + '. Reply to confirm or reschedule.' });\n    }\n  });\n});\nconst eligibleRecall = []; const skippedRecall = [];\npatients.forEach(function(p){\n  if (!p.recall_due_date) return;\n  const due = new Date(p.recall_due_date);\n  if (due <= now) {\n    const hasUpcoming = appts.some(function(a){ return a.patient_id === p.patient_id && new Date(a.start_time) > now; });\n    if (hasUpcoming) { skippedRecall.push({ patient_id: p.patient_id, reason: 'Already has upcoming appointment' }); return; }\n    if (!p.consent_marketing) { skippedRecall.push({ patient_id: p.patient_id, reason: 'Opted out of marketing/recall' }); return; }\n    if (alreadyPrepared(p.patient_id, 'recall')) { skippedRecall.push({ patient_id: p.patient_id, reason: 'Already prepared' }); return; }\n    eligibleRecall.push({ patient_id: p.patient_id, tag: p.patient_id + ':recall', message: 'Hi ' + p.name + \", it's time for your routine check-up - would you like to book?\" });\n  }\n});\nreturn [{ json: { practice_id: config.practice_id, as_of: now.toISOString(), eligible_reminders: eligibleReminders, skipped_reminders: skippedReminders, eligible_recall: eligibleRecall, skipped_recall: skippedRecall } }];"
+      },
+      "id": "be405c90-fe1e-4770-9290-9d3f0b4425c3",
+      "name": "Compute Candidates",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1888,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const c = $('Compute Candidates').first().json;\nconst rows = [];\nc.eligible_reminders.forEach(function(r){ rows.push({ json: { demo_session_id: 'demo1', approval_id: 'apr_' + r.tag + '_' + Date.now(), practice_id: c.practice_id, kind: 'reminder', status: 'Pending', payload: r.message, recipients: r.patient_id, requested_by: 'Luna', created_at: new Date().toISOString() } }); });\nc.eligible_recall.forEach(function(r){ rows.push({ json: { demo_session_id: 'demo1', approval_id: 'apr_' + r.tag + '_' + Date.now(), practice_id: c.practice_id, kind: 'recall', status: 'Pending', payload: r.message, recipients: r.patient_id, requested_by: 'Luna', created_at: new Date().toISOString() } }); });\nreturn rows;"
+      },
+      "id": "1277ed02-679a-433c-a299-7497b49a6880",
+      "name": "Build Approval Rows",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2112,
+        -144
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "12SDCpJjf9aNrnXP"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": []
+        },
+        "options": {}
+      },
+      "id": "c52b7103-9770-4600-8ef0-b5852e094652",
+      "name": "Insert Approval Rows",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        2352,
+        -144
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "pr1",
+              "name": "response",
+              "value": "={{ 'Preview: ' + $('Compute Candidates').item.json.eligible_reminders.length + ' reminder(s) and ' + $('Compute Candidates').item.json.eligible_recall.length + ' recall message(s) queued for approval. ' + $('Compute Candidates').item.json.skipped_reminders.length + ' reminder(s) and ' + $('Compute Candidates').item.json.skipped_recall.length + ' recall(s) skipped.' }}",
+              "type": "string"
+            },
+            {
+              "id": "pr2",
+              "name": "eligible_reminders",
+              "value": "={{ $('Compute Candidates').item.json.eligible_reminders }}",
+              "type": "array"
+            },
+            {
+              "id": "pr3",
+              "name": "skipped_reminders",
+              "value": "={{ $('Compute Candidates').item.json.skipped_reminders }}",
+              "type": "array"
+            },
+            {
+              "id": "pr4",
+              "name": "eligible_recall",
+              "value": "={{ $('Compute Candidates').item.json.eligible_recall }}",
+              "type": "array"
+            },
+            {
+              "id": "pr5",
+              "name": "skipped_recall",
+              "value": "={{ $('Compute Candidates').item.json.skipped_recall }}",
+              "type": "array"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "53d267fd-9251-4cf1-b1c1-8d47f23a96a1",
+      "name": "Preview Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2592,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const c = $('Compute Candidates').first().json;\nconst rows = [];\nc.eligible_reminders.forEach(function(r){ rows.push({ json: { demo_session_id: 'demo1', event_id: 'evt_' + Date.now() + '_' + Math.random().toString(36).slice(2,6), practice_id: c.practice_id, type: 'reminder_prepared', description: 'Prepared ' + r.stage + ' reminder for ' + r.appointment_id, related_id: r.appointment_id, created_at: new Date().toISOString() } }); });\nc.eligible_recall.forEach(function(r){ rows.push({ json: { demo_session_id: 'demo1', event_id: 'evt_' + Date.now() + '_' + Math.random().toString(36).slice(2,6), practice_id: c.practice_id, type: 'reminder_prepared', description: 'Prepared recall for ' + r.patient_id, related_id: r.patient_id, created_at: new Date().toISOString() } }); });\nreturn rows;"
+      },
+      "id": "14e9bc9b-614f-4677-8d6f-3675273068e9",
+      "name": "Build Prepared Events",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2112,
+        256
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "Wc59RmscYiM6P62q"
+        },
+        "columns": {
+          "mappingMode": "autoMapInputData",
+          "value": {},
+          "matchingColumns": []
+        },
+        "options": {}
+      },
+      "id": "e0b27cc4-d2c7-4149-8f5f-bc6a36c7e24b",
+      "name": "Insert Prepared Events",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        2352,
+        256
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Preview Reminders & Recall": {
+      "main": [
+        [
+          {
+            "node": "Demo Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Demo Config": {
+      "main": [
+        [
+          {
+            "node": "Get Agents (Practice)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Agents (Practice)": {
+      "main": [
+        [
+          {
+            "node": "Extract Luna Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Luna Status": {
+      "main": [
+        [
+          {
+            "node": "Luna Enabled?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Luna Enabled?": {
+      "main": [
+        [
+          {
+            "node": "Start Reminder Calc",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Luna Paused",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Start Reminder Calc": {
+      "main": [
+        [
+          {
+            "node": "Get Appointments (Reminders)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Patients (Reminders)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Get Prior Reminder Events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Appointments (Reminders)": {
+      "main": [
+        [
+          {
+            "node": "Wait For All Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Patients (Reminders)": {
+      "main": [
+        [
+          {
+            "node": "Wait For All Data",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Get Prior Reminder Events": {
+      "main": [
+        [
+          {
+            "node": "Wait For All Data",
+            "type": "main",
+            "index": 2
+          }
+        ]
+      ]
+    },
+    "Wait For All Data": {
+      "main": [
+        [
+          {
+            "node": "Compute Candidates",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Compute Candidates": {
+      "main": [
+        [
+          {
+            "node": "Build Approval Rows",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Build Prepared Events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Approval Rows": {
+      "main": [
+        [
+          {
+            "node": "Insert Approval Rows",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Approval Rows": {
+      "main": [
+        [
+          {
+            "node": "Preview Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Prepared Events": {
+      "main": [
+        [
+          {
+            "node": "Insert Prepared Events",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "versionId": "4914dcf6-e6b2-4a07-945e-f00488f33a7a",
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp",
+    "instanceId": "82666a06905407f68d06c73658cdfa99b6326fd9e24f210de55bcbd7bb7bdcf0"
+  },
+  "nodeGroups": [],
+  "id": "MgB2V58QPtgjzHiR",
+  "tags": []
+}

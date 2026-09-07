@@ -1,0 +1,433 @@
+{
+  "name": "Leo — Operations Briefing",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "9fbdd7e5-dcbd-49d1-a258-f1ce26f62bcb",
+      "name": "Generate Leo Briefing",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "s1",
+              "name": "practice_id",
+              "value": "prac_oakwood",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "be0e1553-d947-469d-9d8c-7730bc05422a",
+      "name": "Scenario Input",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "KC8u4siKTiTEmKOv"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "practice_id",
+              "keyValue": "={{ $json.practice_id }}"
+            }
+          ]
+        }
+      },
+      "id": "5edfbc99-aaed-461e-a50c-0aa2eb582f3b",
+      "name": "Get Agents (Practice)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        448,
+        0
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all().map(function(i){ return i.json; });\nconst leo = rows.find(function(r){ return r.agent_id === 'operations'; });\nreturn [{ json: { enabled: leo ? !!leo.enabled : false } }];"
+      },
+      "id": "c74391c9-a6df-462a-b4e6-960617e73c59",
+      "name": "Extract Leo Status",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        672,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.enabled }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "d93582a6-73f8-481a-8dc0-7f0dfb54c6e6",
+      "name": "Leo Enabled?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        880,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "2bAmrhgGbNIsh23J"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "practice_id",
+              "keyValue": "={{ $('Scenario Input').item.json.practice_id }}"
+            }
+          ]
+        }
+      },
+      "id": "ad0378f9-ff45-41ed-b0ad-c770c17fbd4a",
+      "name": "Get Appointments (Briefing)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1152,
+        0
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "lp1",
+              "name": "response",
+              "value": "Leo is currently paused for this practice. No briefing was generated.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "919aca77-579d-47f1-a9aa-ab79f9100677",
+      "name": "Leo Paused",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1152,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "MRKwUO4mxr4zBU0Q"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "practice_id",
+              "keyValue": "={{ $('Scenario Input').item.json.practice_id }}"
+            }
+          ]
+        }
+      },
+      "id": "29a67a95-ba0b-45c3-8dbc-5131ed785b27",
+      "name": "Get Conversations (Briefing)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1392,
+        0
+      ],
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "12SDCpJjf9aNrnXP"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "practice_id",
+              "keyValue": "={{ $('Scenario Input').item.json.practice_id }}"
+            }
+          ]
+        }
+      },
+      "id": "08e5ff1d-88d2-4e1a-a5fb-063829599482",
+      "name": "Get Approvals (Briefing)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1632,
+        0
+      ],
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "Wc59RmscYiM6P62q"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "practice_id",
+              "keyValue": "={{ $('Scenario Input').item.json.practice_id }}"
+            }
+          ]
+        }
+      },
+      "id": "9151c241-1ef4-4619-9425-f8e310064592",
+      "name": "Get Activity Events (Briefing)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1872,
+        0
+      ],
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const practiceId = $('Scenario Input').first().json.practice_id;\nconst agents = $('Get Agents (Practice)').all().map(function(i){ return i.json; }).filter(function(r){ return r.agent_id; });\nconst appts = $('Get Appointments (Briefing)').all().map(function(i){ return i.json; }).filter(function(r){ return r.appointment_id; });\nconst convos = $('Get Conversations (Briefing)').all().map(function(i){ return i.json; }).filter(function(r){ return r.conversation_id; });\nconst approvals = $('Get Approvals (Briefing)').all().map(function(i){ return i.json; }).filter(function(r){ return r.approval_id; });\nconst events = $('Get Activity Events (Briefing)').all().map(function(i){ return i.json; }).filter(function(r){ return r.event_id; });\n\nconst statusCounts = { Confirmed: 0, Arrived: 0, Completed: 0, Cancelled: 0 };\nappts.forEach(function(a){ if (statusCounts.hasOwnProperty(a.status)) statusCounts[a.status]++; });\n\nconst bookingsCreated = events.filter(function(e){ return e.type === 'appointment.created'; }).length;\nconst cancellations = events.filter(function(e){ return e.type === 'appointment.cancelled'; }).length;\nconst slotsFilled = events.filter(function(e){ return e.type === 'waitlist.filled'; }).length;\nconst waitlistDeclined = events.filter(function(e){ return e.type === 'waitlist.declined'; }).length;\nconst remindersFollowups = events.filter(function(e){ return e.type === 'reminder_prepared' || e.type === 'followup_sent'; }).length;\nconst clinicalEscalations = events.filter(function(e){ return e.type === 'clinical_escalation'; }).length;\nconst humanRequests = events.filter(function(e){ return e.type === 'human_request'; }).length;\n\nconst conversationsNeedingAttention = convos.filter(function(c){ return c.status === 'Needs attention'; }).length;\nconst pendingApprovals = approvals.filter(function(a){ return a.status === 'Pending'; }).length;\n\nconst enabledAgents = agents.filter(function(a){ return a.enabled; }).map(function(a){ return a.agent_name; });\nconst pausedAgents = agents.filter(function(a){ return !a.enabled; }).map(function(a){ return a.agent_name; });\n\nconst actionItems = [];\nif (conversationsNeedingAttention > 0) actionItems.push(conversationsNeedingAttention + ' conversation(s) need staff attention.');\nif (pendingApprovals > 0) actionItems.push(pendingApprovals + ' approval(s) are pending review.');\nif (clinicalEscalations > 0) actionItems.push(clinicalEscalations + ' clinical concern(s) flagged - urgent.');\nif (pausedAgents.length > 0) actionItems.push('Paused agents: ' + pausedAgents.join(', ') + '.');\nif (actionItems.length === 0) actionItems.push('No outstanding action items.');\n\nconst summary = 'Your practice has ' + statusCounts.Confirmed + ' confirmed appointment(s), ' + conversationsNeedingAttention + ' conversation(s) requiring staff attention, and ' + pendingApprovals + ' approval(s) waiting. Finn filled ' + slotsFilled + ' cancelled slot(s) from the waitlist this session.';\n\nreturn [{ json: {\n  practice_id: practiceId,\n  generated_at: new Date().toISOString(),\n  summary: summary,\n  metrics: {\n    appointments_by_status: statusCounts,\n    bookings_created: bookingsCreated,\n    cancellations: cancellations,\n    slots_filled_by_finn: slotsFilled,\n    waitlist_declined: waitlistDeclined,\n    conversations_needing_attention: conversationsNeedingAttention,\n    pending_approvals: pendingApprovals,\n    reminders_and_followups_sent: remindersFollowups,\n    clinical_escalations: clinicalEscalations,\n    human_requests: humanRequests,\n    enabled_agents: enabledAgents,\n    paused_agents: pausedAgents\n  },\n  action_items: actionItems\n} }];"
+      },
+      "id": "ab32fe83-d076-401f-aeef-b4ab6c6d8a6f",
+      "name": "Build Briefing",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2112,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "br1",
+              "name": "summary",
+              "value": "={{ $json.summary }}",
+              "type": "string"
+            },
+            {
+              "id": "br2",
+              "name": "metrics",
+              "value": "={{ $json.metrics }}",
+              "type": "object"
+            },
+            {
+              "id": "br3",
+              "name": "action_items",
+              "value": "={{ $json.action_items }}",
+              "type": "array"
+            },
+            {
+              "id": "br4",
+              "name": "generated_at",
+              "value": "={{ $json.generated_at }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ea5f9def-acd8-414b-8337-acd52dbd293c",
+      "name": "Briefing Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2352,
+        0
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Generate Leo Briefing": {
+      "main": [
+        [
+          {
+            "node": "Scenario Input",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scenario Input": {
+      "main": [
+        [
+          {
+            "node": "Get Agents (Practice)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Agents (Practice)": {
+      "main": [
+        [
+          {
+            "node": "Extract Leo Status",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Leo Status": {
+      "main": [
+        [
+          {
+            "node": "Leo Enabled?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Leo Enabled?": {
+      "main": [
+        [
+          {
+            "node": "Get Appointments (Briefing)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Leo Paused",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Appointments (Briefing)": {
+      "main": [
+        [
+          {
+            "node": "Get Conversations (Briefing)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Conversations (Briefing)": {
+      "main": [
+        [
+          {
+            "node": "Get Approvals (Briefing)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Approvals (Briefing)": {
+      "main": [
+        [
+          {
+            "node": "Get Activity Events (Briefing)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Activity Events (Briefing)": {
+      "main": [
+        [
+          {
+            "node": "Build Briefing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Briefing": {
+      "main": [
+        [
+          {
+            "node": "Briefing Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "versionId": "b0459175-196c-4804-8995-884c12337f4f",
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp",
+    "instanceId": "82666a06905407f68d06c73658cdfa99b6326fd9e24f210de55bcbd7bb7bdcf0"
+  },
+  "nodeGroups": [],
+  "id": "MHVGJvtra1ndr2uV",
+  "tags": []
+}

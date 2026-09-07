@@ -1,0 +1,2238 @@
+{
+  "name": "Guided Demo — 8-Step Presenter Walkthrough",
+  "nodes": [
+    {
+      "parameters": {},
+      "id": "1a115391-330e-4f91-9ffa-ffeb3ae3e090",
+      "name": "Run Guided Demo Step",
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "d1",
+              "name": "practice_id",
+              "value": "prac_oakwood",
+              "type": "string"
+            },
+            {
+              "id": "d2",
+              "name": "step",
+              "value": 1,
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "1f446d00-c5d2-4b90-979e-8834d46d33db",
+      "name": "Demo Config",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        224,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Demo Config').item.json.step }}",
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "rightValue": 1
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Demo Config').item.json.step }}",
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "rightValue": 2
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Demo Config').item.json.step }}",
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "rightValue": 3
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Demo Config').item.json.step }}",
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "rightValue": 4
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Demo Config').item.json.step }}",
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "rightValue": 5
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Demo Config').item.json.step }}",
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "rightValue": 6
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Demo Config').item.json.step }}",
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "rightValue": 7
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 1
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Demo Config').item.json.step }}",
+                    "operator": {
+                      "type": "number",
+                      "operation": "equals"
+                    },
+                    "rightValue": 8
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra",
+          "renameFallbackOutput": "Invalid"
+        }
+      },
+      "id": "e0a45258-7bc5-445f-bae0-f7d9485fbc41",
+      "name": "Route Step",
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        448,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "JrqZh89LzRyrS0AJ"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "practice_id",
+              "keyValue": "={{ $('Demo Config').item.json.practice_id }}"
+            }
+          ]
+        }
+      },
+      "id": "a9e193dd-f645-4c95-8b9f-725a0663b916",
+      "name": "Get Practices (Step 1)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        704,
+        -1408
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "s1r1",
+              "name": "step",
+              "value": 1,
+              "type": "number"
+            },
+            {
+              "id": "s1r2",
+              "name": "message",
+              "value": "={{ 'Demo initialized for ' + $json.name + '. Six agents are enabled: Ava, Milo, Luna, Finn, Iris, Leo.' }}",
+              "type": "string"
+            },
+            {
+              "id": "s1r3",
+              "name": "changed_record_ids",
+              "value": "[]",
+              "type": "string"
+            },
+            {
+              "id": "s1r4",
+              "name": "suggested_dashboard_section",
+              "value": "Overview",
+              "type": "string"
+            },
+            {
+              "id": "s1r5",
+              "name": "next_step",
+              "value": 2,
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6fb94467-1930-4636-b539-cf4657c794e0",
+      "name": "Step 1 Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        944,
+        -1408
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "2bAmrhgGbNIsh23J"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "practice_id",
+              "keyValue": "={{ $('Demo Config').item.json.practice_id }}"
+            }
+          ]
+        }
+      },
+      "id": "230dd4ab-6285-458b-9c5c-7053dd77edc8",
+      "name": "Get Appointments (Step 2)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        704,
+        -1152
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const appts = $input.all().map(function(i){ return i.json; }).filter(function(r){ return r.appointment_id; });\nconst existing = appts.find(function(a){ return a.appointment_id === 'appt_guided_demo_2'; });\nif (existing) { return [{ json: { already_done: true, message: 'Milo already booked this patient a Check-up (via Ava) for ' + existing.start_time + '.', appointment_id: existing.appointment_id } }]; }\nconst start = new Date('2026-09-09T10:00:00.000Z');\nconst end = new Date(start.getTime() + 30 * 60000);\nconst providers = ['Dr. Adeyemi', 'Dr. Novak'];\nconst chairs = ['Chair 1', 'Chair 2'];\nlet provider = null, chair = null;\nfor (let p = 0; p < providers.length; p++) { for (let c = 0; c < chairs.length; c++) { const conflict = appts.some(function(a){ if (a.status === 'Cancelled') return false; const rs = new Date(a.start_time); const re = new Date(a.end_time); return start < re && end > rs && (a.provider === providers[p] || a.chair === chairs[c]); }); if (!conflict) { provider = providers[p]; chair = chairs[c]; break; } } if (provider) break; }\nreturn [{ json: { already_done: false, start_time: start.toISOString(), end_time: end.toISOString(), provider: provider, chair: chair } }];"
+      },
+      "id": "66852299-43ed-4470-bae3-49de87543929",
+      "name": "Step 2 Check",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        944,
+        -1152
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.already_done }}",
+              "operator": {
+                "type": "boolean",
+                "operation": "true"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "c89378d2-45f9-4a33-90ff-fc4bab246173",
+      "name": "Step 2 Already Done?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1184,
+        -1152
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "s2s1",
+              "name": "step",
+              "value": 2,
+              "type": "number"
+            },
+            {
+              "id": "s2s2",
+              "name": "message",
+              "value": "={{ $json.message }}",
+              "type": "string"
+            },
+            {
+              "id": "s2s3",
+              "name": "changed_record_ids",
+              "value": "[\"appt_guided_demo_2\"]",
+              "type": "string"
+            },
+            {
+              "id": "s2s4",
+              "name": "suggested_dashboard_section",
+              "value": "Appointments",
+              "type": "string"
+            },
+            {
+              "id": "s2s5",
+              "name": "next_step",
+              "value": 3,
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "fcc1551c-01b2-4b9b-95c0-dda6a6862ef3",
+      "name": "Step 2 Skip Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1424,
+        -1248
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "2bAmrhgGbNIsh23J"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "demo_session_id": "demo1",
+            "appointment_id": "appt_guided_demo_2",
+            "practice_id": "={{ $('Demo Config').item.json.practice_id }}",
+            "patient_id": "pat_prac_oakwood_4",
+            "provider": "={{ $json.provider }}",
+            "chair": "={{ $json.chair }}",
+            "treatment": "Check-up",
+            "start_time": "={{ $json.start_time }}",
+            "end_time": "={{ $json.end_time }}",
+            "status": "Confirmed",
+            "version": 1
+          }
+        },
+        "options": {}
+      },
+      "id": "09939501-0ca6-424d-8197-f1d6b44432b7",
+      "name": "Insert Step 2 Appointment",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1424,
+        -1056
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "Wc59RmscYiM6P62q"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "demo_session_id": "demo1",
+            "event_id": "={{ \"evt_\" + $now.toMillis() }}",
+            "practice_id": "={{ $('Demo Config').item.json.practice_id }}",
+            "type": "appointment.created",
+            "description": "Milo delegated a booking request to Ava - Emma Bennett booked for a Check-up.",
+            "related_id": "appt_guided_demo_2",
+            "created_at": "={{ $now.toISO() }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "b2aa6ae6-7a7f-4e47-a740-9818012018b6",
+      "name": "Log Step 2 Event",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1664,
+        -1056
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "s2r1",
+              "name": "step",
+              "value": 2,
+              "type": "number"
+            },
+            {
+              "id": "s2r2",
+              "name": "message",
+              "value": "Milo took a booking request from Emma Bennett and delegated it to Ava, who confirmed a Check-up.",
+              "type": "string"
+            },
+            {
+              "id": "s2r3",
+              "name": "changed_record_ids",
+              "value": "[\"appt_guided_demo_2\"]",
+              "type": "string"
+            },
+            {
+              "id": "s2r4",
+              "name": "suggested_dashboard_section",
+              "value": "Appointments",
+              "type": "string"
+            },
+            {
+              "id": "s2r5",
+              "name": "next_step",
+              "value": 3,
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "fb6525b0-d45b-41f5-8ea8-6244e9c3df79",
+      "name": "Step 2 Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1904,
+        -1056
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "12SDCpJjf9aNrnXP"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "practice_id",
+              "keyValue": "={{ $('Demo Config').item.json.practice_id }}"
+            }
+          ]
+        }
+      },
+      "id": "9bd9e2a9-2891-4db8-be34-56ce7bdffb80",
+      "name": "Get Approvals (Step 3)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        704,
+        -848
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const rows = $input.all().map(function(i){ return i.json; }).filter(function(r){ return r.approval_id; });\nconst pending = rows.filter(function(r){ return r.status === 'Pending'; });\nconst ids = pending.map(function(r){ return r.approval_id; });\nreturn [{ json: { step: 3, message: 'Luna has ' + pending.length + ' reminder/recall message(s) awaiting approval. Open the Approval Processor with one of these approval_ids to approve or reject.', changed_record_ids: JSON.stringify(ids), suggested_dashboard_section: 'Approvals', next_step: 4 } }];"
+      },
+      "id": "3a50523d-5a25-4144-b368-e340b3231011",
+      "name": "Step 3 Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        944,
+        -848
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "2bAmrhgGbNIsh23J"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "appointment_id",
+              "keyValue": "appt_prac_oakwood_1"
+            }
+          ]
+        }
+      },
+      "id": "bc32166b-9da8-4766-a078-99d7c858fd28",
+      "name": "Get Appointment (Step 4)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        704,
+        -608
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.status }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "rightValue": "Cancelled"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "f94a2b76-b3b9-4f30-8642-7ce463651139",
+      "name": "Step 4 Already Cancelled?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        944,
+        -608
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "s4s1",
+              "name": "step",
+              "value": 4,
+              "type": "number"
+            },
+            {
+              "id": "s4s2",
+              "name": "message",
+              "value": "Ava already cancelled this appointment - the slot is released.",
+              "type": "string"
+            },
+            {
+              "id": "s4s3",
+              "name": "changed_record_ids",
+              "value": "[\"appt_prac_oakwood_1\"]",
+              "type": "string"
+            },
+            {
+              "id": "s4s4",
+              "name": "suggested_dashboard_section",
+              "value": "Appointments",
+              "type": "string"
+            },
+            {
+              "id": "s4s5",
+              "name": "next_step",
+              "value": 5,
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "bb9d6eb0-db54-46c8-aa28-8f8e6eb38003",
+      "name": "Step 4 Skip Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1184,
+        -704
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "2bAmrhgGbNIsh23J"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "appointment_id",
+              "keyValue": "appt_prac_oakwood_1"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "status": "Cancelled"
+          }
+        },
+        "options": {}
+      },
+      "id": "d0f67d41-9156-4f33-bb71-ffa388b256f7",
+      "name": "Cancel (Step 4)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1184,
+        -496
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "Wc59RmscYiM6P62q"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "demo_session_id": "demo1",
+            "event_id": "={{ \"evt_\" + $now.toMillis() }}",
+            "practice_id": "={{ $('Demo Config').item.json.practice_id }}",
+            "type": "appointment.cancelled",
+            "description": "Ava cancelled the Cleaning appointment for James Wright - slot released for Finn.",
+            "related_id": "appt_prac_oakwood_1",
+            "created_at": "={{ $now.toISO() }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "a153e910-a345-4d8d-8676-78ba284afcd8",
+      "name": "Log Step 4 Event",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1424,
+        -496
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "s4r1",
+              "name": "step",
+              "value": 4,
+              "type": "number"
+            },
+            {
+              "id": "s4r2",
+              "name": "message",
+              "value": "Ava cancelled the Cleaning appointment. The slot is now released for the waitlist.",
+              "type": "string"
+            },
+            {
+              "id": "s4r3",
+              "name": "changed_record_ids",
+              "value": "[\"appt_prac_oakwood_1\"]",
+              "type": "string"
+            },
+            {
+              "id": "s4r4",
+              "name": "suggested_dashboard_section",
+              "value": "Appointments",
+              "type": "string"
+            },
+            {
+              "id": "s4r5",
+              "name": "next_step",
+              "value": 5,
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8d8f321d-49ce-473f-8163-5c2c4a2ada63",
+      "name": "Step 4 Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1664,
+        -496
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "LVUcjXcAUvgcRFMf"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "waitlist_id",
+              "keyValue": "wl_prac_oakwood_1"
+            }
+          ]
+        }
+      },
+      "id": "c0c11047-9436-4c4e-ac3c-bfb922966a67",
+      "name": "Get Waitlist Entry (Step 5)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        704,
+        -304
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.status }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "rightValue": "Waiting"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "f48d8e01-5067-4258-a3c9-5ad5b8a8b878",
+      "name": "Step 5 Already Filled?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        944,
+        -304
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "s5s1",
+              "name": "step",
+              "value": 5,
+              "type": "number"
+            },
+            {
+              "id": "s5s2",
+              "name": "message",
+              "value": "Finn already filled this slot from the waitlist.",
+              "type": "string"
+            },
+            {
+              "id": "s5s3",
+              "name": "changed_record_ids",
+              "value": "[\"wl_prac_oakwood_1\"]",
+              "type": "string"
+            },
+            {
+              "id": "s5s4",
+              "name": "suggested_dashboard_section",
+              "value": "Waitlist",
+              "type": "string"
+            },
+            {
+              "id": "s5s5",
+              "name": "next_step",
+              "value": 6,
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "8534ac7f-4666-4be5-855d-665d9e896d6e",
+      "name": "Step 5 Skip Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1184,
+        -208
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "2bAmrhgGbNIsh23J"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "appointment_id",
+              "keyValue": "appt_prac_oakwood_1"
+            }
+          ]
+        }
+      },
+      "id": "90c9abec-ae6d-4de4-a358-56f22d9dbece",
+      "name": "Get Cancelled Appointment (Step 5)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1184,
+        -96
+      ],
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "2bAmrhgGbNIsh23J"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "demo_session_id": "demo1",
+            "appointment_id": "={{ \"appt_guided_demo_5_\" + $now.toMillis() }}",
+            "practice_id": "={{ $('Demo Config').item.json.practice_id }}",
+            "patient_id": "={{ $('Get Waitlist Entry (Step 5)').item.json.patient_id }}",
+            "provider": "={{ $('Get Cancelled Appointment (Step 5)').item.json.provider }}",
+            "chair": "={{ $('Get Cancelled Appointment (Step 5)').item.json.chair }}",
+            "treatment": "={{ $('Get Waitlist Entry (Step 5)').item.json.treatment }}",
+            "start_time": "={{ $('Get Cancelled Appointment (Step 5)').item.json.start_time }}",
+            "end_time": "={{ $('Get Cancelled Appointment (Step 5)').item.json.end_time }}",
+            "status": "Confirmed",
+            "version": 1
+          }
+        },
+        "options": {}
+      },
+      "id": "c9a6e2dc-5c6c-4a09-9c9e-6f89c225ce71",
+      "name": "Insert Step 5 Appointment",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1424,
+        -96
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "LVUcjXcAUvgcRFMf"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "waitlist_id",
+              "keyValue": "wl_prac_oakwood_1"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "status": "Filled"
+          }
+        },
+        "options": {}
+      },
+      "id": "1043e359-e30d-414d-ab8d-8656c02779cc",
+      "name": "Mark Waitlist Filled (Step 5)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1664,
+        -96
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "Wc59RmscYiM6P62q"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "demo_session_id": "demo1",
+            "event_id": "={{ \"evt_\" + $now.toMillis() }}",
+            "practice_id": "={{ $('Demo Config').item.json.practice_id }}",
+            "type": "waitlist.filled",
+            "description": "Finn invited the next waitlist patient and she accepted the released Cleaning slot.",
+            "related_id": "wl_prac_oakwood_1",
+            "created_at": "={{ $now.toISO() }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "1902fc3e-3537-4bf6-8067-6977322e7cad",
+      "name": "Log Step 5 Event",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1904,
+        -96
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "s5r1",
+              "name": "step",
+              "value": 5,
+              "type": "number"
+            },
+            {
+              "id": "s5r2",
+              "name": "message",
+              "value": "Finn invited the next waitlist patient, who accepted the released Cleaning slot.",
+              "type": "string"
+            },
+            {
+              "id": "s5r3",
+              "name": "changed_record_ids",
+              "value": "[\"wl_prac_oakwood_1\"]",
+              "type": "string"
+            },
+            {
+              "id": "s5r4",
+              "name": "suggested_dashboard_section",
+              "value": "Waitlist",
+              "type": "string"
+            },
+            {
+              "id": "s5r5",
+              "name": "next_step",
+              "value": 6,
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ba0518bd-9d70-4377-ab01-7cb22c563393",
+      "name": "Step 5 Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2144,
+        -96
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "2bAmrhgGbNIsh23J"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "appointment_id",
+              "keyValue": "appt_guided_demo_2"
+            }
+          ]
+        }
+      },
+      "id": "c506959f-0b34-4396-a05a-c91ecc63ebf5",
+      "name": "Get Step 2 Appointment (Step 6)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        704,
+        208
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.appointment_id }}",
+              "operator": {
+                "type": "string",
+                "operation": "empty"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "d287ec18-c797-4f30-abff-721f76c475a4",
+      "name": "Step 6 Not Yet Booked?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        944,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "s6nb1",
+              "name": "response",
+              "value": "Run step 2 first to book the appointment that gets completed here.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "2865f8c1-ec1f-4e7a-b5e2-6b755ecdb656",
+      "name": "Step 6 Not Booked Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1184,
+        112
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.status }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "rightValue": "Completed"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "cdb51094-d823-404b-88a3-c8141e386449",
+      "name": "Step 6 Already Completed?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        1184,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "s6s1",
+              "name": "step",
+              "value": 6,
+              "type": "number"
+            },
+            {
+              "id": "s6s2",
+              "name": "message",
+              "value": "This visit is already marked Completed and Iris already sent the follow-up.",
+              "type": "string"
+            },
+            {
+              "id": "s6s3",
+              "name": "changed_record_ids",
+              "value": "[\"appt_guided_demo_2\"]",
+              "type": "string"
+            },
+            {
+              "id": "s6s4",
+              "name": "suggested_dashboard_section",
+              "value": "Inbox",
+              "type": "string"
+            },
+            {
+              "id": "s6s5",
+              "name": "next_step",
+              "value": 7,
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "297ba947-d167-4a09-89c3-73ca1aa3ca6e",
+      "name": "Step 6 Skip Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1424,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "2bAmrhgGbNIsh23J"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "appointment_id",
+              "keyValue": "appt_guided_demo_2"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "status": "Completed"
+          }
+        },
+        "options": {}
+      },
+      "id": "75fe9283-9675-41b0-916c-72ecd643a39f",
+      "name": "Mark Completed (Step 6)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1424,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "MRKwUO4mxr4zBU0Q"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "demo_session_id": "demo1",
+            "conversation_id": "conv_guided_demo_6",
+            "practice_id": "={{ $('Demo Config').item.json.practice_id }}",
+            "patient_id": "pat_prac_oakwood_4",
+            "channel": "WhatsApp",
+            "status": "Agent handling",
+            "last_message": "Thank you for visiting. Would you like our team to contact you?",
+            "assigned_to": "",
+            "updated_at": "={{ $now.toISO() }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "dd4102fb-3c85-4bda-921e-c12e898aa024",
+      "name": "Insert Conversation (Step 6)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1664,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "Wc59RmscYiM6P62q"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "demo_session_id": "demo1",
+            "event_id": "={{ \"evt_\" + $now.toMillis() }}",
+            "practice_id": "={{ $('Demo Config').item.json.practice_id }}",
+            "type": "followup_sent",
+            "description": "Visit marked Completed - Iris sent an administrative check-in.",
+            "related_id": "appt_guided_demo_2",
+            "created_at": "={{ $now.toISO() }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "584cd0ac-8c7d-44db-9969-af32e77be199",
+      "name": "Log Step 6 Event",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1904,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "s6r1",
+              "name": "step",
+              "value": 6,
+              "type": "number"
+            },
+            {
+              "id": "s6r2",
+              "name": "message",
+              "value": "The visit was marked Completed, and Iris sent a follow-up check-in.",
+              "type": "string"
+            },
+            {
+              "id": "s6r3",
+              "name": "changed_record_ids",
+              "value": "[\"appt_guided_demo_2\",\"conv_guided_demo_6\"]",
+              "type": "string"
+            },
+            {
+              "id": "s6r4",
+              "name": "suggested_dashboard_section",
+              "value": "Inbox",
+              "type": "string"
+            },
+            {
+              "id": "s6r5",
+              "name": "next_step",
+              "value": 7,
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "6470ddd0-fed0-44b3-96c2-d4e86ebff195",
+      "name": "Step 6 Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        2144,
+        400
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "MRKwUO4mxr4zBU0Q"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "conversation_id",
+              "keyValue": "conv_prac_oakwood_0"
+            }
+          ]
+        }
+      },
+      "id": "bdb516c8-1346-4d09-babc-ff5e676ca960",
+      "name": "Get Conversation (Step 7)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        704,
+        704
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 1
+          },
+          "conditions": [
+            {
+              "leftValue": "={{ $json.status }}",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              },
+              "rightValue": "Needs attention"
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "2398d18f-0d0c-4609-b930-2ddda4d87d77",
+      "name": "Step 7 Already Handled?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        944,
+        704
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "MRKwUO4mxr4zBU0Q"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "conversation_id",
+              "keyValue": "conv_prac_oakwood_0"
+            }
+          ]
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "status": "Staff handling",
+            "last_message": "A staff member has taken over this conversation."
+          }
+        },
+        "options": {}
+      },
+      "id": "d83fcbd5-4aa3-45f2-a0d6-f6da187f1e42",
+      "name": "Staff Takeover (Step 7)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1184,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "Wc59RmscYiM6P62q"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "matchingColumns": [],
+          "value": {
+            "demo_session_id": "demo1",
+            "event_id": "={{ \"evt_\" + $now.toMillis() }}",
+            "practice_id": "={{ $('Demo Config').item.json.practice_id }}",
+            "type": "staff_takeover",
+            "description": "Staff took over a clinical concern conversation, pausing automated replies.",
+            "related_id": "conv_prac_oakwood_0",
+            "created_at": "={{ $now.toISO() }}"
+          }
+        },
+        "options": {}
+      },
+      "id": "33c86c90-ddb1-4b4a-90bd-10bee4358323",
+      "name": "Log Step 7 Event",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1424,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "s7r1",
+              "name": "step",
+              "value": 7,
+              "type": "number"
+            },
+            {
+              "id": "s7r2",
+              "name": "message",
+              "value": "The swelling concern was already flagged Needs attention by Milo. A staff member has now taken over the conversation and automated replies are paused.",
+              "type": "string"
+            },
+            {
+              "id": "s7r3",
+              "name": "changed_record_ids",
+              "value": "[\"conv_prac_oakwood_0\"]",
+              "type": "string"
+            },
+            {
+              "id": "s7r4",
+              "name": "suggested_dashboard_section",
+              "value": "Inbox",
+              "type": "string"
+            },
+            {
+              "id": "s7r5",
+              "name": "next_step",
+              "value": 8,
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "37e53c4d-6fde-4d50-a6d8-d062530c1b89",
+      "name": "Step 7 Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1664,
+        608
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "s7s1",
+              "name": "step",
+              "value": 7,
+              "type": "number"
+            },
+            {
+              "id": "s7s2",
+              "name": "message",
+              "value": "={{ 'Staff already took over this conversation - current status: ' + $json.status + '.' }}",
+              "type": "string"
+            },
+            {
+              "id": "s7s3",
+              "name": "changed_record_ids",
+              "value": "[\"conv_prac_oakwood_0\"]",
+              "type": "string"
+            },
+            {
+              "id": "s7s4",
+              "name": "suggested_dashboard_section",
+              "value": "Inbox",
+              "type": "string"
+            },
+            {
+              "id": "s7s5",
+              "name": "next_step",
+              "value": 8,
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "80c6edd2-9a1c-4b5e-8bf9-0b32766e6300",
+      "name": "Step 7 Skip Response",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1184,
+        800
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "2bAmrhgGbNIsh23J"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "practice_id",
+              "keyValue": "={{ $('Demo Config').item.json.practice_id }}"
+            }
+          ]
+        }
+      },
+      "id": "8b4a4780-057a-4ef3-8d03-e06397e374a7",
+      "name": "Get Appointments (Step 8)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        704,
+        1008
+      ],
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "MRKwUO4mxr4zBU0Q"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "practice_id",
+              "keyValue": "={{ $('Demo Config').item.json.practice_id }}"
+            }
+          ]
+        }
+      },
+      "id": "7809c238-6137-4d01-98de-2cc18927581b",
+      "name": "Get Conversations (Step 8)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        944,
+        1008
+      ],
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "12SDCpJjf9aNrnXP"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "practice_id",
+              "keyValue": "={{ $('Demo Config').item.json.practice_id }}"
+            }
+          ]
+        }
+      },
+      "id": "fa6ce50d-c8c2-46aa-80df-e625ed9e51f1",
+      "name": "Get Approvals (Step 8)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1184,
+        1008
+      ],
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "dataTableId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "Wc59RmscYiM6P62q"
+        },
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "practice_id",
+              "keyValue": "={{ $('Demo Config').item.json.practice_id }}"
+            }
+          ]
+        }
+      },
+      "id": "571bfe73-55f5-473f-b488-48f8af6da61c",
+      "name": "Get Activity Events (Step 8)",
+      "type": "n8n-nodes-base.dataTable",
+      "typeVersion": 1,
+      "position": [
+        1424,
+        1008
+      ],
+      "executeOnce": true,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "jsCode": "const appts = $('Get Appointments (Step 8)').all().map(function(i){ return i.json; }).filter(function(r){ return r.appointment_id; });\nconst convos = $('Get Conversations (Step 8)').all().map(function(i){ return i.json; }).filter(function(r){ return r.conversation_id; });\nconst approvals = $('Get Approvals (Step 8)').all().map(function(i){ return i.json; }).filter(function(r){ return r.approval_id; });\nconst events = $('Get Activity Events (Step 8)').all().map(function(i){ return i.json; }).filter(function(r){ return r.event_id; });\nconst confirmed = appts.filter(function(a){ return a.status === 'Confirmed'; }).length;\nconst completed = appts.filter(function(a){ return a.status === 'Completed'; }).length;\nconst cancelled = appts.filter(function(a){ return a.status === 'Cancelled'; }).length;\nconst needsAttention = convos.filter(function(c){ return c.status === 'Needs attention'; }).length;\nconst staffHandling = convos.filter(function(c){ return c.status === 'Staff handling'; }).length;\nconst pending = approvals.filter(function(a){ return a.status === 'Pending'; }).length;\nconst slotsFilled = events.filter(function(e){ return e.type === 'waitlist.filled'; }).length;\nconst summary = 'Updated briefing: ' + confirmed + ' confirmed, ' + completed + ' completed, and ' + cancelled + ' cancelled appointment(s). ' + needsAttention + ' conversation(s) need attention and ' + staffHandling + ' are now staff-handled. ' + pending + ' approval(s) still pending. Finn has filled ' + slotsFilled + ' slot(s) from the waitlist this session.';\nreturn [{ json: { step: 8, message: summary, changed_record_ids: '[]', suggested_dashboard_section: 'Overview', next_step: null } }];"
+      },
+      "id": "9f0526b9-4863-45ad-a061-4627cd17f97e",
+      "name": "Step 8 Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1664,
+        1008
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "i1",
+              "name": "response",
+              "value": "Step must be between 1 and 8.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "985a1ca6-424a-40bc-a488-7f721a041f6b",
+      "name": "Invalid Step",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        704,
+        1600
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Run Guided Demo Step": {
+      "main": [
+        [
+          {
+            "node": "Demo Config",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Demo Config": {
+      "main": [
+        [
+          {
+            "node": "Route Step",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Route Step": {
+      "main": [
+        [
+          {
+            "node": "Get Practices (Step 1)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Appointments (Step 2)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Approvals (Step 3)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Appointment (Step 4)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Waitlist Entry (Step 5)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Step 2 Appointment (Step 6)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Conversation (Step 7)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get Appointments (Step 8)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Invalid Step",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Practices (Step 1)": {
+      "main": [
+        [
+          {
+            "node": "Step 1 Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Appointments (Step 2)": {
+      "main": [
+        [
+          {
+            "node": "Step 2 Check",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Step 2 Check": {
+      "main": [
+        [
+          {
+            "node": "Step 2 Already Done?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Step 2 Already Done?": {
+      "main": [
+        [
+          {
+            "node": "Step 2 Skip Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Insert Step 2 Appointment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Step 2 Appointment": {
+      "main": [
+        [
+          {
+            "node": "Log Step 2 Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Step 2 Event": {
+      "main": [
+        [
+          {
+            "node": "Step 2 Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Approvals (Step 3)": {
+      "main": [
+        [
+          {
+            "node": "Step 3 Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Appointment (Step 4)": {
+      "main": [
+        [
+          {
+            "node": "Step 4 Already Cancelled?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Step 4 Already Cancelled?": {
+      "main": [
+        [
+          {
+            "node": "Step 4 Skip Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Cancel (Step 4)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cancel (Step 4)": {
+      "main": [
+        [
+          {
+            "node": "Log Step 4 Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Step 4 Event": {
+      "main": [
+        [
+          {
+            "node": "Step 4 Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Waitlist Entry (Step 5)": {
+      "main": [
+        [
+          {
+            "node": "Step 5 Already Filled?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Cancelled Appointment (Step 5)": {
+      "main": [
+        [
+          {
+            "node": "Insert Step 5 Appointment",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Step 5 Appointment": {
+      "main": [
+        [
+          {
+            "node": "Mark Waitlist Filled (Step 5)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Waitlist Filled (Step 5)": {
+      "main": [
+        [
+          {
+            "node": "Log Step 5 Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Step 5 Event": {
+      "main": [
+        [
+          {
+            "node": "Step 5 Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Step 2 Appointment (Step 6)": {
+      "main": [
+        [
+          {
+            "node": "Step 6 Not Yet Booked?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Step 6 Not Yet Booked?": {
+      "main": [
+        [
+          {
+            "node": "Step 6 Not Booked Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Step 6 Already Completed?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Step 6 Already Completed?": {
+      "main": [
+        [
+          {
+            "node": "Step 6 Skip Response",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Mark Completed (Step 6)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mark Completed (Step 6)": {
+      "main": [
+        [
+          {
+            "node": "Insert Conversation (Step 6)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insert Conversation (Step 6)": {
+      "main": [
+        [
+          {
+            "node": "Log Step 6 Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Step 6 Event": {
+      "main": [
+        [
+          {
+            "node": "Step 6 Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Conversation (Step 7)": {
+      "main": [
+        [
+          {
+            "node": "Step 7 Already Handled?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Step 7 Already Handled?": {
+      "main": [
+        [
+          {
+            "node": "Staff Takeover (Step 7)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Step 7 Skip Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Staff Takeover (Step 7)": {
+      "main": [
+        [
+          {
+            "node": "Log Step 7 Event",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Log Step 7 Event": {
+      "main": [
+        [
+          {
+            "node": "Step 7 Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Appointments (Step 8)": {
+      "main": [
+        [
+          {
+            "node": "Get Conversations (Step 8)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Conversations (Step 8)": {
+      "main": [
+        [
+          {
+            "node": "Get Approvals (Step 8)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Approvals (Step 8)": {
+      "main": [
+        [
+          {
+            "node": "Get Activity Events (Step 8)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Activity Events (Step 8)": {
+      "main": [
+        [
+          {
+            "node": "Step 8 Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Step 5 Already Filled?": {
+      "main": [
+        [
+          {
+            "node": "Get Cancelled Appointment (Step 5)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Step 5 Skip Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate",
+    "availableInMCP": true
+  },
+  "versionId": "5cc84435-97fe-4866-9870-af085bd829a5",
+  "meta": {
+    "aiBuilderAssisted": true,
+    "builderVariant": "mcp",
+    "instanceId": "82666a06905407f68d06c73658cdfa99b6326fd9e24f210de55bcbd7bb7bdcf0"
+  },
+  "nodeGroups": [],
+  "id": "HQd2c3dKYl4W0Dev",
+  "tags": []
+}

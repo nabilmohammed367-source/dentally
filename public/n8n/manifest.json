@@ -1,0 +1,62 @@
+{
+  "version": 1,
+  "files": [
+    {
+      "id": "ava",
+      "url": "/n8n/ava.json",
+      "webhook": "dentalos-demo/ava"
+    },
+    {
+      "id": "milo",
+      "url": "/n8n/milo.json",
+      "webhook": "dentalos-demo/milo"
+    },
+    {
+      "id": "luna",
+      "url": "/n8n/luna.json",
+      "webhook": "dentalos-demo/luna"
+    },
+    {
+      "id": "finn",
+      "url": "/n8n/finn.json",
+      "webhook": "dentalos-demo/finn"
+    },
+    {
+      "id": "iris",
+      "url": "/n8n/iris.json",
+      "webhook": "dentalos-demo/iris"
+    },
+    {
+      "id": "leo",
+      "url": "/n8n/leo.json",
+      "webhook": "dentalos-demo/leo"
+    },
+    {
+      "id": "approvals",
+      "url": "/n8n/approvals.json",
+      "webhook": "dentalos-demo/approvals"
+    },
+    {
+      "id": "guided-demo",
+      "url": "/n8n/guided-demo.json",
+      "webhook": "dentalos-demo/guided-demo"
+    },
+    {
+      "id": "setup",
+      "url": "/n8n/setup.json",
+      "webhook": "dentalos-demo/setup"
+    },
+    {
+      "id": "state",
+      "url": "/n8n/state.json",
+      "webhook": "dentalos-demo/state"
+    }
+  ],
+  "columns": {
+    "demo_session_id": "string",
+    "practice_id": "string",
+    "dashboard_snapshot": "string"
+  },
+  "storage": "One JSON snapshot per isolated presenter session in the existing Practices table. Existing flattened rows are not migrated or modified. Single-presenter sequential demo only.",
+  "date": "2026-09-07"
+}

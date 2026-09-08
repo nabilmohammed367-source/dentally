@@ -2,7 +2,7 @@
   "name": "Guided Demo — 8-Step Presenter Walkthrough [Dashboard v1]",
   "nodes": [
     {
-      "id": "e29b9449-0e79-4111-870f-13cdf1c033f8",
+      "id": "8d8847ef-5d37-43b6-b7b2-da5d2ba6c10f",
       "name": "Dashboard Webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
@@ -17,10 +17,10 @@
         "responseMode": "responseNode",
         "options": {}
       },
-      "webhookId": "250420de-97ca-4921-8799-b358a29a6dd7"
+      "webhookId": "bec86369-a9c4-4d0f-bf40-ae52211c59e8"
     },
     {
-      "id": "1284cc74-a39f-4095-a984-819a77f9de53",
+      "id": "c0a318aa-7d3c-43fb-941c-07f0789cad00",
       "name": "Validate Request",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -33,7 +33,7 @@
       }
     },
     {
-      "id": "46952211-bb04-4d82-a213-e6f4beec9e2b",
+      "id": "1e57ef39-8ca4-4aa1-b7c5-424815a8f06a",
       "name": "Load Demo Session",
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1,
@@ -69,7 +69,7 @@
       "alwaysOutputData": true
     },
     {
-      "id": "e80c18be-2776-434a-a7a6-b664715f8bc8",
+      "id": "3df246fb-e40e-40ea-8f35-ec9010551d5f",
       "name": "Execute Agent Command",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -82,7 +82,7 @@
       }
     },
     {
-      "id": "70f6d93c-dd2c-40c4-8dd3-015b3bc86930",
+      "id": "d17075b4-1a17-477c-9ce1-89c1afd69403",
       "name": "Persist Changes?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
@@ -99,7 +99,7 @@
           },
           "conditions": [
             {
-              "id": "278d0d1f-bc1d-4b77-857a-351a266c5cc9",
+              "id": "3683fb50-0ad8-4c20-857b-622a41558b6e",
               "leftValue": "={{ $json.write }}",
               "rightValue": "",
               "operator": {
@@ -115,7 +115,7 @@
       }
     },
     {
-      "id": "53ca0fb3-e454-4875-b72c-e28071396f3d",
+      "id": "0e080b75-7dc3-49aa-bd75-242ca9c71ffa",
       "name": "Save Demo Session",
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1,
@@ -191,7 +191,7 @@
       }
     },
     {
-      "id": "5cd0e13c-5491-49f3-9450-01d9309a379c",
+      "id": "16d79834-9464-4c80-9bc0-c9e48b63926c",
       "name": "Respond After Persistence",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,

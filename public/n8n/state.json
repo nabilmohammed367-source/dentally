@@ -2,7 +2,7 @@
   "name": "DentalOS — State & Controls [Dashboard v1]",
   "nodes": [
     {
-      "id": "e4b678d7-6309-47da-b077-fc4d43429d6c",
+      "id": "e536949b-d37d-4063-ac18-349bc96944c7",
       "name": "Dashboard Webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
@@ -17,10 +17,10 @@
         "responseMode": "responseNode",
         "options": {}
       },
-      "webhookId": "c5fb07e1-e322-4952-9cc7-b5f4d9dba690"
+      "webhookId": "9203c5ca-b3e4-4647-8172-3a3c08011d65"
     },
     {
-      "id": "5bf59bd5-31df-4fc7-bd71-5c50bae90a5b",
+      "id": "4493c636-9638-4b9b-a066-17003a6e93ab",
       "name": "Validate Request",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -33,7 +33,7 @@
       }
     },
     {
-      "id": "f64fa7e4-6578-4d59-bcb7-da864839a9ad",
+      "id": "4a873603-ff2b-4756-b184-3fee17edc0d3",
       "name": "Load Demo Session",
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1,
@@ -69,7 +69,7 @@
       "alwaysOutputData": true
     },
     {
-      "id": "116af3a6-97b2-44a3-b951-27a63db16337",
+      "id": "3e59d3f3-906b-4a5a-bdcf-a6ff5224d32e",
       "name": "Execute Agent Command",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -82,7 +82,7 @@
       }
     },
     {
-      "id": "676a20fa-a7db-4fa3-b418-6e04b57d7f49",
+      "id": "04e69646-f8a2-4bd1-b167-3ba0cf8cddff",
       "name": "Persist Changes?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
@@ -99,7 +99,7 @@
           },
           "conditions": [
             {
-              "id": "3a941330-af16-4f20-a131-edd998bd0d69",
+              "id": "4620bf05-e2b3-4789-901a-6bc5a00560c6",
               "leftValue": "={{ $json.write }}",
               "rightValue": "",
               "operator": {
@@ -115,7 +115,7 @@
       }
     },
     {
-      "id": "5dafe76d-6022-43c9-a242-1a280dd42c1d",
+      "id": "87adc848-632e-4587-9cd4-13ec2b217045",
       "name": "Save Demo Session",
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1,
@@ -191,7 +191,7 @@
       }
     },
     {
-      "id": "5b647aba-67cb-4bcf-bc8a-75ef962cc1ab",
+      "id": "d189fe95-e841-4842-8293-6980981af5f7",
       "name": "Respond After Persistence",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,

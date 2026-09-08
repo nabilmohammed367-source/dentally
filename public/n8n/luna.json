@@ -2,7 +2,7 @@
   "name": "Luna — Reminders & Recall [Dashboard v1]",
   "nodes": [
     {
-      "id": "0a5ddb0d-2c41-4f33-a2e0-9d6f6a1890b1",
+      "id": "2471971e-4b09-4984-948d-df5dd65307cb",
       "name": "Dashboard Webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
@@ -17,10 +17,10 @@
         "responseMode": "responseNode",
         "options": {}
       },
-      "webhookId": "00f5d1f5-f4c7-4e29-aadf-bb74db8ea6ce"
+      "webhookId": "b672b58a-cb9e-4aa7-8387-240043a0459f"
     },
     {
-      "id": "0ebd89da-a58a-46e9-8cd5-6fca48537e68",
+      "id": "f95135da-8dd6-405c-9576-679085686b2e",
       "name": "Validate Request",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -33,7 +33,7 @@
       }
     },
     {
-      "id": "e7b47cd2-1c19-4a60-abba-09cb559c9d96",
+      "id": "e65fe67c-6e55-45a4-a5be-bee995bb0f10",
       "name": "Load Demo Session",
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1,
@@ -69,7 +69,7 @@
       "alwaysOutputData": true
     },
     {
-      "id": "c3928283-7f0f-4438-8e16-9d3d12ec9a60",
+      "id": "d347a74f-85a8-4831-a15d-44f13d2032a2",
       "name": "Execute Agent Command",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -82,7 +82,7 @@
       }
     },
     {
-      "id": "c026c244-04d5-42ab-b9e9-3d5d00a6c4fa",
+      "id": "6d5fadd3-afe7-4d9e-8171-a066e42fac6d",
       "name": "Persist Changes?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
@@ -99,7 +99,7 @@
           },
           "conditions": [
             {
-              "id": "c7223333-18ad-494c-948a-e26136727d77",
+              "id": "94ea6a5e-58b8-4f1e-8ae2-e4cbf923e0fa",
               "leftValue": "={{ $json.write }}",
               "rightValue": "",
               "operator": {
@@ -115,7 +115,7 @@
       }
     },
     {
-      "id": "16831249-c1be-4d51-b3f7-7e31acd36574",
+      "id": "bcc91cda-c615-416a-8e9a-ebe07b738866",
       "name": "Save Demo Session",
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1,
@@ -191,7 +191,7 @@
       }
     },
     {
-      "id": "bef99954-0390-44f1-ac30-b5b61f41a922",
+      "id": "ed873c63-48ff-46b4-8ed3-55aa99a2d7ea",
       "name": "Respond After Persistence",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,

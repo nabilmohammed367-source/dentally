@@ -2,7 +2,7 @@
   "name": "Ava — Receptionist (Booking, Reschedule, Cancel) [Dashboard v1]",
   "nodes": [
     {
-      "id": "25a72ce9-ec9c-4b47-af5a-5ee8be28479c",
+      "id": "ea28c2fc-cecd-4789-90ba-a2f44c43e674",
       "name": "Dashboard Webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
@@ -17,10 +17,10 @@
         "responseMode": "responseNode",
         "options": {}
       },
-      "webhookId": "7b79e1d9-aa44-4e9a-a998-94c9fa752f78"
+      "webhookId": "9a1502ed-46ba-487e-9bd5-8ec538028596"
     },
     {
-      "id": "ce551c1f-df6c-4313-8353-5961bdf1ae6a",
+      "id": "21ffb84d-2719-4aab-8d57-fb6bdb225d5f",
       "name": "Validate Request",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -33,7 +33,7 @@
       }
     },
     {
-      "id": "ad5aa49e-9929-4d84-a59f-b55a6f72853f",
+      "id": "d98bc7d2-e563-4b10-9a72-c4e3fac3042e",
       "name": "Load Demo Session",
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1,
@@ -69,7 +69,7 @@
       "alwaysOutputData": true
     },
     {
-      "id": "4e83613e-1e68-46cc-9d15-44ccb9904025",
+      "id": "00779747-709c-465d-b912-7034636801dc",
       "name": "Execute Agent Command",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -82,7 +82,7 @@
       }
     },
     {
-      "id": "b75fe049-7428-4104-b381-d9f688184a58",
+      "id": "fcdb95a4-7f50-4a8c-80be-1e4b1af88c0d",
       "name": "Persist Changes?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
@@ -99,7 +99,7 @@
           },
           "conditions": [
             {
-              "id": "8da43246-a82f-4e7a-a5a2-2ebe6374ec99",
+              "id": "acdb67b7-1580-4c83-9902-de17eaa88473",
               "leftValue": "={{ $json.write }}",
               "rightValue": "",
               "operator": {
@@ -115,7 +115,7 @@
       }
     },
     {
-      "id": "3314a841-51b2-4d17-9925-626bcf34b009",
+      "id": "2319f7df-b2b7-46ac-9775-6ebd37df0555",
       "name": "Save Demo Session",
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1,
@@ -191,7 +191,7 @@
       }
     },
     {
-      "id": "11fa4364-8c46-4878-a631-261e6b8718b8",
+      "id": "8790c0a1-8bf4-4b01-baaf-45255fd5de6b",
       "name": "Respond After Persistence",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,

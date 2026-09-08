@@ -2,7 +2,7 @@
   "name": "Milo — Patient Support (WhatsApp/Web) [Dashboard v1]",
   "nodes": [
     {
-      "id": "584eb4f3-2857-4597-84c1-5012511bbe30",
+      "id": "161ed936-3654-4bea-b0b3-8b46b8f40dba",
       "name": "Dashboard Webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
@@ -17,10 +17,10 @@
         "responseMode": "responseNode",
         "options": {}
       },
-      "webhookId": "f7287ddc-6813-48fb-ba3d-ab0ddc0fe1b5"
+      "webhookId": "be917cea-0c32-44c9-b186-cf2ea82af1ad"
     },
     {
-      "id": "21174c73-a776-40e9-b3df-5d46861d2e77",
+      "id": "e18a3f0f-429d-4937-b4f2-24e80e80acd4",
       "name": "Validate Request",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -33,7 +33,7 @@
       }
     },
     {
-      "id": "be498a68-3ccf-43f8-a78d-06f367f00885",
+      "id": "c36fa341-2d97-4692-97ae-0c924fc109f1",
       "name": "Load Demo Session",
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1,
@@ -69,7 +69,7 @@
       "alwaysOutputData": true
     },
     {
-      "id": "8a73b663-dc68-404b-ab89-8c2fb262e3c9",
+      "id": "b0034909-b415-42be-a42d-3a0574cf572b",
       "name": "Execute Agent Command",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -82,7 +82,7 @@
       }
     },
     {
-      "id": "cbbe7c11-bc06-4f70-9cab-8f0b3cf601ea",
+      "id": "65793d4d-8e43-453a-b296-11f762c4cf27",
       "name": "Persist Changes?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
@@ -99,7 +99,7 @@
           },
           "conditions": [
             {
-              "id": "8321ae64-40ba-43f5-81d0-4aea9ea67af4",
+              "id": "bcf788c2-1294-40cc-812d-a4aed8ef40ee",
               "leftValue": "={{ $json.write }}",
               "rightValue": "",
               "operator": {
@@ -115,7 +115,7 @@
       }
     },
     {
-      "id": "7cf6b264-a5ae-418f-8a52-9f1a27f70c87",
+      "id": "8548ca16-7500-4256-940b-2e224159d193",
       "name": "Save Demo Session",
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1,
@@ -191,7 +191,7 @@
       }
     },
     {
-      "id": "15b8c0a3-21bd-4cab-9ca8-d06043ff757e",
+      "id": "6cb4482c-98a7-4ced-8f54-55255e775c5c",
       "name": "Respond After Persistence",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,

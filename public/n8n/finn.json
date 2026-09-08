@@ -2,7 +2,7 @@
   "name": "Finn — Waitlist Coordinator [Dashboard v1]",
   "nodes": [
     {
-      "id": "a6e2f3d0-3a40-4b96-888f-d0107d3ee88d",
+      "id": "1ea9d82f-8304-427f-b331-36bfa62bddd2",
       "name": "Dashboard Webhook",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2,
@@ -17,10 +17,10 @@
         "responseMode": "responseNode",
         "options": {}
       },
-      "webhookId": "0f1d1776-aafa-4914-ae5e-edfaceb9d64f"
+      "webhookId": "73daa7fd-a402-4256-838c-eabd857ecf1f"
     },
     {
-      "id": "77c1ff62-f982-4d63-8668-63256b3a9536",
+      "id": "b4bcd53e-2173-4eaf-932e-eb1581a49053",
       "name": "Validate Request",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -33,7 +33,7 @@
       }
     },
     {
-      "id": "63497697-4766-40f5-bb17-fdf7b38a70e6",
+      "id": "673549d5-1380-46ef-ad24-5023f051c06e",
       "name": "Load Demo Session",
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1,
@@ -69,7 +69,7 @@
       "alwaysOutputData": true
     },
     {
-      "id": "0ac772ce-e51e-4957-af73-d10ca565c53b",
+      "id": "c376737d-d300-4ead-9c5e-d091e38a4348",
       "name": "Execute Agent Command",
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
@@ -82,7 +82,7 @@
       }
     },
     {
-      "id": "d41dd06c-e84b-4b51-bd65-1dba254c77ea",
+      "id": "a00973e2-227a-4285-a99a-f96a2238f326",
       "name": "Persist Changes?",
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.2,
@@ -99,7 +99,7 @@
           },
           "conditions": [
             {
-              "id": "4db1a265-5202-471e-ac7d-d258c3181428",
+              "id": "0463cbc4-7231-4575-a25b-a17dd30bd194",
               "leftValue": "={{ $json.write }}",
               "rightValue": "",
               "operator": {
@@ -115,7 +115,7 @@
       }
     },
     {
-      "id": "f5cfbdce-6d8a-4974-9b45-c6cecb4f95ba",
+      "id": "6ce54bb4-9428-4413-865c-19a9665671b6",
       "name": "Save Demo Session",
       "type": "n8n-nodes-base.dataTable",
       "typeVersion": 1,
@@ -191,7 +191,7 @@
       }
     },
     {
-      "id": "434570ec-ee96-4e8b-a54d-cd8383c397f8",
+      "id": "038d9dfb-4999-4536-9b31-6c53436c3b11",
       "name": "Respond After Persistence",
       "type": "n8n-nodes-base.respondToWebhook",
       "typeVersion": 1.4,

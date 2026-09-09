@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { Activity, ArrowUpRight, Bell, Building2, CalendarDays, ChevronDown, CircleHelp, Command, FlaskConical, LayoutDashboard, Menu, MessageSquare, Plus, Search, Settings2, ShieldCheck, Sparkles, Users, Workflow, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -20,8 +21,8 @@ import type { Appointment, View } from '@/lib/demo/types'
 import { cn } from '@/lib/utils'
 
 const navigation = [{ name: 'Overview', icon: LayoutDashboard }, { name: 'Appointments', icon: CalendarDays }, { name: 'Inbox', icon: MessageSquare }, { name: 'Patients', icon: Users }, { name: 'AI agents', icon: Sparkles }, { name: 'Automations', icon: Workflow }] as const
-export function DentalApp() { return <DemoProvider><Workspace /><Toaster theme="light" position="bottom-right" /></DemoProvider> }
-function Workspace() {
+export function DentalApp({ publicDemo = false }: { publicDemo?: boolean }) { return <DemoProvider key={publicDemo ? 'public' : 'presenter'} localOnly={publicDemo}><Workspace publicDemo={publicDemo} /><Toaster theme="light" position="bottom-right" /></DemoProvider> }
+function Workspace({ publicDemo }: { publicDemo: boolean }) {
   const { store, practice, switchPractice, ready, revision, connected, pending } = useDemo()
   const [view, setView] = useState<View>('Overview')
   const [mobile, setMobile] = useState(false)
@@ -53,8 +54,9 @@ function Workspace() {
       <div className="flex items-center border-t border-sidebar-border px-5 py-4"><div className="mr-3 flex size-9 items-center justify-center rounded-full bg-sidebar-accent text-sm">EW</div><div><p className="text-sm font-medium">Emma Wilson</p><p className="text-sm text-sidebar-foreground/45">Demo workspace</p></div></div>
     </aside>
     <div className="flex min-w-0 flex-1 flex-col lg:ml-56">
+      <div className="flex flex-wrap items-center justify-between gap-2 border-b bg-secondary px-5 py-2 text-sm text-primary lg:px-8"><Link href="/" className="font-medium underline-offset-4 hover:underline">← Back to Vaqor AI</Link><span>{publicDemo ? 'Public sample · Fictional data only' : 'Presenter workspace · Backend access requires a key'}</span></div>
       <header className="flex h-17 shrink-0 items-center justify-between border-b bg-card px-5 lg:px-8"><div className="flex items-center gap-3"><Button variant="ghost" size="icon" className="lg:hidden" aria-label="Open navigation" onClick={() => setMobile(true)}><Menu /></Button><span className="hidden text-sm text-muted-foreground sm:block">Workspace</span><span className="hidden text-muted-foreground/40 sm:block">/</span><span className="text-sm font-medium">{view}</span></div><div className="flex items-center gap-4"><button disabled={!ready} onClick={() => setSearchOpen(true)} className="hidden items-center text-sm text-muted-foreground sm:flex"><Search className="mr-2 size-4" />Search anything<span className="ml-8 rounded border px-1.5 text-sm">⌘ K</span></button><Button variant="ghost" size="icon" className="sm:hidden" aria-label="Search workspace" disabled={!ready} onClick={() => setSearchOpen(true)}><Search /></Button><Badge variant="secondary"><FlaskConical data-icon="inline-start" />Demo mode</Badge><Button variant="ghost" size="icon" aria-label={`Review ${pendingApprovals} pending approvals`} onClick={() => navigate('Automations')}><Bell /></Button><div className="avatar hidden sm:flex">EW</div></div></header>
-      <main className="flex-1 px-5 py-7 lg:px-8"><div className="mx-auto max-w-7xl" key={`${practice.id}-${revision}`}><N8nConnection />{!ready ? <p role="status" className="py-20 text-center text-muted-foreground">{connected ? 'Waiting for n8n records. Local sample data is hidden in connected mode.' : 'Preparing your demo workspace…'}</p> : <fieldset disabled={pending} className="page-enter min-w-0" key={view}>
+      <main className="flex-1 px-5 py-7 lg:px-8"><div className="mx-auto max-w-7xl" key={`${practice.id}-${revision}`}>{!publicDemo && <N8nConnection />}{!ready ? <p role="status" className="py-20 text-center text-muted-foreground">{connected ? 'Waiting for n8n records. Local sample data is hidden in connected mode.' : 'Preparing your demo workspace…'}</p> : <fieldset disabled={pending} className="page-enter min-w-0" key={view}>
         {view === 'Overview' && <Overview navigate={navigate} book={() => setBooking('new')} openAppointment={setBooking} />}
         {view === 'Appointments' && <Appointments openAppointment={setBooking} />}
         {view === 'AI agents' && <Agents navigate={navigate} />}

@@ -1,5 +1,5 @@
-import { DentalApp } from '@/components/dental/dental-app'
+import { AgencyHome } from '@/components/marketing/agency-home'
 
 export default function Page() {
-  return <DentalApp />
+  return <AgencyHome />
 }

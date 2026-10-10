@@ -45,5 +45,5 @@ export function DentistScene({ time }: { time: number }) {
 }
 
 export function EndScene() {
-  return <div className="film-end"><motion.div className="film-end-icon" initial={{ scale: .9 }} animate={{ scale: 1 }} transition={{ duration: 1 }}><Headphones /></motion.div><p className="film-eyebrow">AI ASSISTANTS FOR DUTCH DENTAL PRACTICES</p><h1><span>DentalOS</span><span className="film-end-dash">—</span><br />less admin,<br /><em>more care.</em></h1><motion.div className="film-end-contact" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: .7 }}><p>Book a 15-minute demo <ArrowRight /></p><span>YOUR-EMAIL-HERE</span><small>All examples are illustrative.</small></motion.div></div>
+  return <div className="film-end"><motion.div className="film-end-icon" initial={{ scale: .9 }} animate={{ scale: 1 }} transition={{ duration: 1 }}><Headphones /></motion.div><p className="film-eyebrow">AI ASSISTANTS FOR DUTCH DENTAL PRACTICES</p><h1><span>DentalOS</span><span className="film-end-dash">—</span><br />less admin,<br /><em>more care.</em></h1><motion.div className="film-end-contact" initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: .7 }}><p>Book a 15-minute demo <ArrowRight /></p><span>nabilmohammed367@gmail.com</span><small>All examples are illustrative.</small></motion.div></div>
 }

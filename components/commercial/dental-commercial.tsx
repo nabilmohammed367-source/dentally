@@ -6,9 +6,8 @@ import { Headphones, RotateCcw } from 'lucide-react'
 import { ApprovalScene, CalendarScene, ChatScene, DentistScene, EndScene, PhoneScene, TeamScene } from './commercial-scenes'
 import styles from './commercial.module.css'
 
-const STARTS = [0, 4000, 8000, 13000, 17000, 21000, 25000]
-const LABELS = ['The everyday challenge', 'Your practice team', 'A helpful answer', 'A full calendar', 'You’re in control', 'Care stays human', 'Less admin, more care']
-const DURATION = 30000
+const STARTS = [0, 5500, 11000, 16500, 22000, 27500, 33000]
+const DURATION = 38000
 
 export function DentalCommercial() {
   const container = useRef<HTMLDivElement>(null)
@@ -48,8 +47,8 @@ export function DentalCommercial() {
   return <MotionConfig reducedMotion="user"><main ref={container} className={`${styles.viewport} font-sans`} aria-label="DentalOS 30-second product commercial"><div className={styles.canvas} style={{ transform: `scale(${scale ?? 0})`, visibility: scale === null ? 'hidden' : 'visible' }} data-scene={scene} data-complete={complete}>
     <header className="film-header"><div className="film-brand"><span className="film-brand-icon"><Headphones /></span>Dental<span>OS</span></div><div className="film-header-note"><i /> A little less admin. A lot more care.</div></header>
     <div className="film-scene-stage" aria-live="off"><AnimatePresence mode="wait"><motion.section key={`${take}-${scene}`} className="film-scene" initial={{ opacity: 0, y: reduced ? 0 : 18 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: reduced ? 0 : -12 }} transition={{ duration: reduced ? .12 : .4, ease: [.22, 1, .36, 1] }}>{content}</motion.section></AnimatePresence></div>
-    <footer className="film-footer"><span>DENTALOS / THE PRODUCT FILM</span><div className="film-chapters" aria-hidden="true">{STARTS.map((start, index) => <span key={start}><i style={{ transform: `scaleX(${Math.min(1, Math.max(0, (elapsed - start) / ((STARTS[index + 1] ?? DURATION) - start)))})` }} /></span>)}</div><span className="film-chapter-name">{LABELS[scene]}</span></footer>
+    <footer className="film-footer"><div className="film-chapters" aria-hidden="true">{STARTS.map((start, index) => <span key={start}><i style={{ transform: `scaleX(${Math.min(1, Math.max(0, (elapsed - start) / ((STARTS[index + 1] ?? DURATION) - start)))})` }} /></span>)}</div></footer>
   </div>{complete && <motion.button className={styles.replay} initial={{ opacity: 0 }} animate={{ opacity: 1 }} onClick={() => { setElapsed(0); setTake(value => value + 1) }}><RotateCcw size={16} /> Replay film</motion.button>}
-  <div className="sr-only"><h2>Commercial transcript</h2><p>Your phone never stops ringing. Meet your new practice team: Ava, Receptionist; Milo, Patient support; Luna, Reminders and recall; Finn, Waitlist; Iris, Follow-up; Leo, Daily briefing.</p><p lang="nl">Patiënt: Hoe laat zijn jullie open? Milo: Wij zijn open van maandag tot en met vrijdag, van 9:00 tot 17:00 uur.</p><p>Cancelled appointment? Filled from the waitlist. Nothing goes out without your approval. Clinical questions always go to the dentist. DentalOS — less admin, more care. Book a 15-minute demo. [your email]. All interactions shown are illustrative.</p></div>
+  <div className="sr-only"><h2>Commercial transcript</h2><p>Your phone never stops ringing. Meet your new practice team: Ava, Receptionist; Milo, Patient support; Luna, Reminders and recall; Finn, Waitlist; Iris, Follow-up; Leo, Daily briefing.</p><p lang="nl">Patiënt: Hoe laat zijn jullie open? Milo: Wij zijn open van maandag tot en met vrijdag, van 9:00 tot 17:00 uur.</p><p>Cancelled appointment? Filled from the waitlist. Nothing goes out without your approval. Clinical questions always go to the dentist. DentalOS — less admin, more care. Book a 15-minute demo. YOUR-EMAIL-HERE. All examples are illustrative.</p></div>
   </main></MotionConfig>
 }

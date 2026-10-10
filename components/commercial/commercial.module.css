@@ -34,7 +34,6 @@
 .canvas :global(.film-floating-call small) { font-size: 17px; font-weight: 400; }
 .canvas :global(.film-icon-box) { display: flex; align-items: center; justify-content: center; width: 60px; height: 60px; background: var(--film-soft); color: var(--film-teal); border-radius: 17px; flex-shrink: 0; }
 .canvas :global(.film-icon-box svg) { width: 27px; height: 27px; stroke-width: 1.5; }
-.canvas :global(.film-example-label) { position: absolute; bottom: 5px; font-size: 15px; color: var(--film-muted); }
 .canvas :global(.film-centered) { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 62px; }
 .canvas :global(.film-centered .film-copy) { align-items: center; text-align: center; gap: 22px; }
 .canvas :global(.film-centered h1) { font-size: 76px; }
@@ -60,7 +59,6 @@
 .canvas :global(.film-message small) { display: flex; align-items: center; justify-content: flex-end; gap: 4px; opacity: .65; font-size: 14px; margin-top: 5px; }
 .canvas :global(.film-typing) { color: var(--film-muted); background: var(--film-paper); border-radius: 12px; padding: 4px 15px; font-size: 25px; letter-spacing: 4px; }
 .canvas :global(.film-chat-input) { position: absolute; bottom: 38px; left: 14px; right: 14px; padding: 12px 15px; border-radius: 30px; background: var(--film-paper); color: var(--film-muted); display: flex; justify-content: space-between; font-size: 16px; }
-.canvas :global(.film-under-phone) { position: absolute; bottom: 0; display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--film-muted); }
 .canvas :global(.film-surface) { background: var(--film-paper); border: 1px solid color-mix(in srgb, var(--film-teal) 17%, var(--film-paper)); border-radius: 28px; box-shadow: 0 24px 80px color-mix(in srgb, var(--film-ink) 6%, transparent); }
 .canvas :global(.film-surface-header) { display: flex; align-items: center; justify-content: space-between; padding: 32px; border-bottom: 1px solid var(--film-soft); }
 .canvas :global(.film-surface-header span) { font-size: 14px; letter-spacing: .13em; color: var(--film-muted); }
@@ -88,7 +86,6 @@
 .canvas :global(.film-approve-button) { display: flex; align-items: center; gap: 10px; padding: 16px 22px; border-radius: 10px; font-size: 19px; background: var(--film-teal); color: var(--film-paper); }
 .canvas :global(.film-pointer) { position: absolute; right: 62px; bottom: 30px; color: var(--film-ink); }
 .canvas :global(.film-pointer svg) { width: 38px; height: 38px; fill: var(--film-paper); }
-.canvas :global(.film-simulation-note) { position: absolute; bottom: -42px; left: 0; width: 100%; text-align: center; color: var(--film-muted); font-size: 14px; }
 .canvas :global(.film-handoff) { display: flex; flex-direction: column; align-items: center; }
 .canvas :global(.film-clinical-message) { display: flex; align-items: center; gap: 20px; border: 1px solid var(--film-soft); border-radius: 22px; padding: 26px 34px; background: var(--film-paper); box-shadow: 0 12px 45px color-mix(in srgb, var(--film-ink) 5%, transparent); }
 .canvas :global(.film-clinical-message span) { color: var(--film-muted); font-size: 14px; letter-spacing: .12em; }
@@ -111,6 +108,7 @@
 .canvas :global(.film-end-contact) { display: flex; flex-direction: column; align-items: center; gap: 14px; margin-top: 14px; }
 .canvas :global(.film-end-contact p) { display: flex; align-items: center; gap: 20px; font-size: 26px; }
 .canvas :global(.film-end-contact > span) { color: var(--film-teal); font-size: 22px; }
+.canvas :global(.film-end-contact small) { color: var(--film-muted); font-size: 15px; margin-top: 8px; }
 .canvas :global(.film-footer) { position: absolute; inset: auto 96px 66px; display: flex; align-items: center; justify-content: space-between; }
 .canvas :global(.film-footer > span) { color: var(--film-muted); font-size: 14px; letter-spacing: .1em; width: 390px; }
 .canvas :global(.film-footer > span:last-child) { text-align: right; letter-spacing: 0; font-size: 17px; }

@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Let verification builds run beside the active local dev server without
+  // sharing or clearing its .next directory.
+  ...(process.env.DENTALOS_BUILD_DIR ? { distDir: process.env.DENTALOS_BUILD_DIR } : {}),
   async headers() {
     return [{ source: '/:path*', headers: [
       { key: 'X-Content-Type-Options', value: 'nosniff' },

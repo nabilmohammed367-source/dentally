@@ -58,7 +58,7 @@ export function AuthForm({ initialMode }: { initialMode: Mode }) {
         <input id="auth-email" type="email" autoComplete="email" required value={email} onChange={e => setEmail(e.target.value)} className="mt-1.5 h-11 w-full rounded-lg border bg-background px-3 font-normal outline-none focus:ring-2 focus:ring-ring" />
       </label>
       {mode !== 'reset' && <label className="block text-sm font-medium" htmlFor="auth-password">Password
-        <input id="auth-password" type="password" autoComplete={mode === 'login' ? 'current-password' : 'new-password'} minLength={12} required value={password} onChange={e => setPassword(e.target.value)} className="mt-1.5 h-11 w-full rounded-lg border bg-background px-3 font-normal outline-none focus:ring-2 focus:ring-ring" />
+        <input id="auth-password" type="password" autoComplete={mode === 'login' ? 'current-password' : 'new-password'} minLength={mode === 'signup' ? 12 : undefined} required value={password} onChange={e => setPassword(e.target.value)} className="mt-1.5 h-11 w-full rounded-lg border bg-background px-3 font-normal outline-none focus:ring-2 focus:ring-ring" />
         {mode === 'signup' && <span className="mt-1 block text-xs font-normal text-muted-foreground">Use at least 12 characters.</span>}
       </label>}
       {error && <p role="alert" className="rounded-lg bg-destructive/10 p-3 text-sm text-destructive">{error}</p>}

@@ -11,6 +11,7 @@ export async function getPracticeAccess(): Promise<PracticeAccess> {
     const { data: claimsData, error: claimsError } = await supabase.auth.getClaims()
     const claims = claimsData?.claims
     const userId = typeof claims?.sub === 'string' ? claims.sub : null
+    if (claimsError && (claimsError.name === 'AuthRetryableFetchError' || (claimsError.status ?? 0) >= 500)) return { status: 'unavailable' }
     if (claimsError || !userId) return { status: 'signed_out' }
 
     const { data: membership, error } = await supabase

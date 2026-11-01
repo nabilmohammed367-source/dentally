@@ -27,17 +27,26 @@ export async function updateSession(request: NextRequest) {
     },
   })
 
-  const { data } = await supabase.auth.getClaims()
+  const { data, error } = await supabase.auth.getClaims()
+  if (error && (error.name === 'AuthRetryableFetchError' || (error.status ?? 0) >= 500)) {
+    return NextResponse.json({ error: 'Sign-in is temporarily unavailable. Please try again shortly.' }, { status: 503, headers: { 'Cache-Control': 'private, no-store' } })
+  }
   const authenticated = typeof data?.claims?.sub === 'string'
+  function redirectWithCookies(url: URL) {
+    const redirect = NextResponse.redirect(url)
+    for (const cookie of response.cookies.getAll()) redirect.cookies.set(cookie)
+    redirect.headers.set('Cache-Control', 'private, no-store')
+    return redirect
+  }
   // API handlers return JSON 401/403 themselves; this proxy only refreshes their session.
   if (!isApi && !authenticated && !isPublicAuthPath) {
     const login = new URL('/login', request.url)
     login.searchParams.set('next', pathname)
-    return NextResponse.redirect(login)
+    return redirectWithCookies(login)
   }
 
   if (!isApi && authenticated && (pathname === '/login' || pathname === '/signup')) {
-    return NextResponse.redirect(new URL('/', request.url))
+    return redirectWithCookies(new URL('/', request.url))
   }
 
   response.headers.set('Cache-Control', 'private, no-store')

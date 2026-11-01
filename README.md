@@ -1,4 +1,6 @@
-# dentally
+# DentalOS
+
+Current status and demonstration steps: [Local readiness report](LOCAL-READINESS.md). The current working version is a local, synthetic-data demo; it is not a deployed real-patient service.
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [v0](https://v0.app).
 
@@ -44,7 +46,7 @@ The browser-only synthetic-data demo remains public when `NEXT_PUBLIC_DENTALOS_L
    Replace the example email and practice ID with the verified owner and approved practice. The SQL migration permits safe ID syntax; it does not create the practice, add it to the server allowlist, isolate its n8n data, or connect its PMS. These are separate provisioning steps.
 6. Restart the app. Live mode requires both a confirmed account and an assigned membership. Unassigned accounts cannot read or trigger practice data.
 
-This is an initial account and practice-access gate, not a complete production security review. The dashboard API restricts approval decisions and agent/automation/practice setting changes to `owner` and `admin` memberships; `staff` can use the other supported dashboard actions. API actions and payloads are allowlisted in the server. The n8n workflows still need independent tenant and record-level checks, and access-role isolation still needs end-to-end verification. The calendar feed, hosting, backups, and real-practice provisioning also need separate hardening before patient data is used.
+This is an initial account and practice-access gate, not a complete production security review. The dashboard API restricts approval decisions and agent/automation/practice setting changes to `owner` and `admin` memberships; `staff` can use the other supported dashboard actions. API actions and payloads are allowlisted in the server. The local workflow hardening now adds independent practice and record checks; see the dated readiness report for the exact tests and limitations. Access-role isolation still needs end-to-end verification with separate signed-in accounts. The calendar feed is disabled. Hosting, backup restore, communication channels and real-practice provisioning remain prerequisites before patient data is used.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 

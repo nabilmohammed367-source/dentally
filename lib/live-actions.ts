@@ -13,24 +13,16 @@ export function nextWeekday(date: string) {
   return d.toISOString().slice(0, 10)
 }
 
-// Book (or reschedule, when id is given) through the real Ava: preview, then confirm.
+// The user confirms in the appointment dialog. One request commits the change.
 export async function liveBook(run: Run, a: { patientId: string; treatment: string; date: string; time: string; id?: string }) {
   const appointment: Record<string, string> = { patientId: a.patientId, treatment: a.treatment, date: a.date, time: a.time }
   if (a.id) appointment.id = a.id
-  const preview = await run('ava', 'preview', { appointment }, { quiet: true })
-  if (!preview) return null
-  const token = preview.result?.token
-  if (!token) { toast.error(preview.message || 'Ava could not prepare that booking.'); return null }
-  return run('ava', 'confirm', { token })
+  return run('ava', 'book', { appointment })
 }
 
-// Cancel through the real Ava, which also releases the slot to Finn's waitlist.
+// Cancel through Ava. A waitlist offer is a separate, explicit action.
 export async function liveCancel(run: Run, appointmentId: string) {
-  const preview = await run('ava', 'cancel-preview', { appointmentId }, { quiet: true })
-  if (!preview) return null
-  const token = preview.result?.token
-  if (!token) { toast.error(preview.message || 'Ava could not cancel that appointment.'); return null }
-  return run('ava', 'confirm', { token })
+  return run('ava', 'cancel', { appointmentId })
 }
 
 // Run one of the automation recipes with its real agent.

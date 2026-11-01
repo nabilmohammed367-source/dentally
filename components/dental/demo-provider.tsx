@@ -9,12 +9,9 @@ import { LIVE } from '@/lib/live'
 import type { Envelope, Run } from '@/lib/live-actions'
 
 const STORAGE_KEY = 'dentalos-demo-nl-v2'
-// n8n only stores each conversation's latest patient message, so the dashboard keeps Milo's real replies here.
-const REPLIES_KEY = 'dentalos-live-replies-v2'
-type SavedReply = { text: string; reply: string; conversationId?: string }
 const POLL_MS = 30000
 const initial = createStore()
-type DemoContextValue = { store: Store; practice: Practice; ready: boolean; update: (recipe: (p: Practice) => void, success?: string) => boolean; switchPractice: (id: string) => void; reset: () => void; revision: number; live: boolean; busy: boolean; run: Run }
+type DemoContextValue = { store: Store; practice: Practice; ready: boolean; update: (recipe: (p: Practice) => void, success?: string) => boolean; switchPractice: (id: string) => void; reset: () => void; revision: number; live: boolean; busy: boolean; connectionError: string | null; run: Run }
 const DemoContext = createContext<DemoContextValue | null>(null)
 export function DemoProvider({ children }: { children: ReactNode }) {
   const { data = initial, mutate } = useSWR<Store>('dentalos-demo', null, { fallbackData: initial, revalidateOnFocus: false })
@@ -24,20 +21,9 @@ export function DemoProvider({ children }: { children: ReactNode }) {
   const warned = useRef(false)
   const activeId = useRef<string | null>(null)
   const [busy, setBusy] = useState(false)
-  const replies = useRef<Record<string, SavedReply[]> | null>(null)
-  function loadReplies() {
-    if (replies.current) return replies.current
-    if (LIVE) { replies.current = {}; return replies.current }
-    try { replies.current = JSON.parse(localStorage.getItem(REPLIES_KEY) || '{}') } catch { replies.current = {} }
-    return replies.current!
-  }
-  function rememberReply(patientId: string, text: string, reply: string, conversationId?: string) {
-    const all = loadReplies()
-    const key = conversationId || patientId
-    const list = (all[key] ?? []).filter(r => r.text !== text)
-    all[key] = [...list, { text, reply, conversationId }].slice(-20)
-    if (!LIVE) try { localStorage.setItem(REPLIES_KEY, JSON.stringify(all)) } catch { /* session only */ }
-  }
+  const inFlight = useRef(false)
+  const generation = useRef(0)
+  const [connectionError, setConnectionError] = useState<string | null>(null)
   function commit(next: Store) {
     current.current = next; void mutate(next, { revalidate: false })
     if (LIVE) return
@@ -48,22 +34,31 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       // Live mode: read the real snapshot from n8n and keep refreshing it.
       let stopped = false
       let failing = false
+      let loading = false
       async function load() {
+        if (loading || inFlight.current || document.visibilityState === 'hidden') return
+        loading = true
+        const startedAt = generation.current
         try {
-          const res = await fetch('/api/dentalos/store', { cache: 'no-store' })
+          const res = await fetch('/api/dentalos/store', { cache: 'no-store', signal: AbortSignal.timeout(45_000) })
           const body = await res.json().catch(() => null)
+          if (res.status === 401 || res.status === 403) { setReady(false); window.location.assign(res.status === 401 ? '/login' : '/pending-access'); return }
           if (!res.ok || !body) throw new Error(body?.error || `Server responded with status ${res.status}`)
-          if (stopped) return
+          if (stopped || startedAt !== generation.current) return
           applyLiveStore(body.store)
+          setConnectionError(null)
           if (failing) { toast.success('Reconnected to your live system.'); failing = false }
           setReady(true)
         } catch (error) {
+          if (stopped || startedAt !== generation.current) return
+          setConnectionError(error instanceof Error ? error.message : 'Could not load practice data.')
           if (!failing) { toast.error(error instanceof Error ? error.message : 'Could not load live data.'); failing = true }
-        }
+        } finally { loading = false }
       }
       void load()
       const timer = setInterval(load, POLL_MS)
-      return () => { stopped = true; clearInterval(timer) }
+      document.addEventListener('visibilitychange', load)
+      return () => { stopped = true; clearInterval(timer); document.removeEventListener('visibilitychange', load) }
     }
     try {
       const saved = localStorage.getItem(STORAGE_KEY)
@@ -102,13 +97,6 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       throw new Error(`Live data did not match the dashboard format (${issue?.path.map(String).join('.')}: ${issue?.message})`)
     }
     const next = parsed.data
-    // Add back the real Milo replies the dashboard has seen, under the patient message they answered.
-    const saved = loadReplies()
-    for (const p of next.practices) for (const c of p.conversations) {
-      const last = c.messages.filter(m => m.role === 'patient').at(-1)
-      const match = last && ((saved[c.id] ?? []).find(r => r.text === last.text) ?? (saved[c.patientId] ?? []).find(r => r.text === last.text))
-      if (match && !c.messages.some(m => m.role === 'agent' && m.text === match.reply)) c.messages.push({ id: `${c.id}-milo`, role: 'agent', text: match.reply })
-    }
     if (activeId.current && next.practices.some(p => p.id === activeId.current)) next.activeId = activeId.current
     activeId.current = next.activeId
     current.current = next; void mutate(next, { revalidate: false })
@@ -116,26 +104,29 @@ export function DemoProvider({ children }: { children: ReactNode }) {
   // Calls a real DentalOS agent in n8n, then shows its own reply and the updated data.
   const run: Run = async (workflow, action, payload, options) => {
     if (!LIVE) { toast.info('Connect the live system to run real agents.'); return null }
+    if (inFlight.current) { toast.info('Please wait for the current change to finish.'); return null }
+    inFlight.current = true
+    generation.current += 1
     setBusy(true)
     try {
-      const res = await fetch('/api/dentalos/action', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ workflow, action, payload, practice_id: current.current.activeId }) })
+      const res = await fetch('/api/dentalos/action', { method: 'POST', signal: AbortSignal.timeout(75_000), headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ workflow, action, payload, practice_id: current.current.activeId }) })
       const body = (await res.json().catch(() => null)) as (Envelope & { error?: string }) | null
+      if (res.status === 401) { setReady(false); window.location.assign('/login'); return null }
       if (!res.ok || !body) throw new Error(body?.error || `Server responded with status ${res.status}`)
       if (body.success === false) { toast.error(body.message || 'The agent could not complete that.'); return null }
-      if (workflow === 'milo' && body.message && typeof payload.patientId === 'string' && typeof payload.text === 'string') rememberReply(payload.patientId, payload.text, body.message, options?.conversationId)
       if (body.store) { try { applyLiveStore(body.store) } catch { /* the next refresh will pick it up */ } }
       if (!options?.quiet && body.message) toast.success(body.message)
       return body
     } catch (error) {
       toast.error(error instanceof Error ? error.message : 'Could not reach the live system.')
       return null
-    } finally { setBusy(false) }
+    } finally { inFlight.current = false; generation.current += 1; setBusy(false) }
   }
   function update(recipe: (p: Practice) => void, success = 'Demo updated') {
     if (!ready) return false
     if (LIVE) {
-      // Honest for now: dashboard edits are not wired to the real agents yet.
-      toast.info('Live mode is view-only for now. Changes come from your agents, like a call to Ava.')
+      // Changes without a supported live action must not mutate only browser state.
+      toast.info('This edit is not connected to the live system.')
       return false
     }
     const next = structuredClone(current.current)
@@ -152,6 +143,6 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     if (LIVE) { toast.info('Reset is not available in live mode. Your real data lives in n8n.'); return }
     commit(createStore()); setRevision(v => v + 1); toast.success('All fictional practices have been reset.')
   }
-  return <DemoContext.Provider value={{ store: data, practice: data.practices.find(p => p.id === data.activeId) ?? data.practices[0], ready, update, switchPractice, revision, reset, live: LIVE, busy, run }}>{children}</DemoContext.Provider>
+  return <DemoContext.Provider value={{ store: data, practice: data.practices.find(p => p.id === data.activeId) ?? data.practices[0], ready, update, switchPractice, revision, reset, live: LIVE, busy, connectionError, run }}>{children}</DemoContext.Provider>
 }
 export function useDemo() { const context = useContext(DemoContext); if (!context) throw new Error('DemoProvider is required'); return context }

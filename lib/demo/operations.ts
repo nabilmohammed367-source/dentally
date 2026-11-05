@@ -56,7 +56,7 @@ export function decideApproval(p: Practice, id: string, approve: boolean) {
   a.status = approve ? 'Approved' : 'Rejected'
   if (approve && a.kind === 'urgent') {
     const c = p.conversations.find(v => v.id === a.conversationId)
-    if (c) { c.status = 'Staff handling'; c.assigned = 'Dr. Emma Wilson'; c.messages.push({ id: uid(), role: 'system', text: 'Staff accepted this handoff. A clinician must review before any clinical reply.' }) }
+    if (c) { c.status = 'Staff handling'; c.assigned = 'Dr. van Dijk'; c.messages.push({ id: uid(), role: 'system', text: 'Staff accepted this handoff. A clinician must review before any clinical reply.' }) }
   } else if (approve && a.kind === 'summary') {
     log(p, 'Daily briefing prepared', `${p.appointments.filter(v => v.date === DEMO_DATE && v.status !== 'Cancelled').length} appointments · ${p.conversations.filter(v => v.status !== 'Resolved').length} open conversations · ${p.approvals.filter(v => v.status === 'Pending').length} pending reviews`, agent?.name)
   } else if (approve) {

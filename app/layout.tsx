@@ -5,7 +5,7 @@ import './globals.css'
 const geist = Geist({ subsets: ['latin'], variable: '--font-geist' })
 export const metadata: Metadata = {
   title: 'DentalOS — A little less admin. A lot more care.',
-  description: 'Explore a multi-practice dental operations demo with a simulated AI team, appointment management, patient support and staff approvals. Fictional data only.',
+  description: 'Explore a multi-practice dental operations demo with a simulated AI team, appointment management, patient support and staff approvals.',
   robots: { index: false, follow: false },
 }
 export const viewport: Viewport = { colorScheme: 'light', themeColor: '#172d30' }

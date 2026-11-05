@@ -1,33 +1,24 @@
-# dentally
+# DentalOS
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [v0](https://v0.app).
+DentalOS is a Dutch dental-practice workflow prototype: a Next.js dashboard for six agents, with Supabase account and practice access and a local n8n backend. **Use synthetic data only.** It is not ready for real patients or unattended practice operation.
 
-## Built with v0
+## Quick code review
 
-This repository is linked to a [v0](https://v0.app) project. You can continue developing by visiting the link below -- start new chats to make changes, and v0 will push commits directly to this repo. Every merge to `main` will automatically deploy.
+1. Start with [`LOCAL-READINESS.md`](LOCAL-READINESS.md) for verified behavior and open gaps, then [`PILOT-PRIVACY-NOTES.md`](PILOT-PRIVACY-NOTES.md) for the data flow.
+2. Review access boundaries in `lib/auth.ts`, `lib/dentalos-service.ts`, `lib/dentalos-api-policy.ts`, and `app/api/dentalos/`.
+3. Run `npm install`, `npm run test:policy`, and `npm run build -- --webpack`. The tracked lockfile is for pnpm; if using pnpm, run `corepack pnpm install --frozen-lockfile` instead.
+4. For the browser-only synthetic interface, run `npm run dev` and open `http://127.0.0.1:3000/`. Port 3001 may be used if 3000 is occupied.
 
-[Continue working on v0 →](https://v0.app/chat/projects/prj_auC9p8PAFpwgmZZj1nJ6EYu4A36Y)
+The n8n workflow definitions, local SQLite database, voice-agent project, credentials, and backups are **not in this repository**. A clone cannot reproduce the connected six-agent workflow system by itself. The local demo can be shown by screen share; there is no public real-patient service.
 
-## Getting Started
+## Connected local setup
 
-First, run the development server:
+Copy `.env.local.example` to `.env.local`. Set the Supabase project URL and publishable key, the server-only n8n webhook URL and key, and the exact provisioned practice IDs. Never commit `.env.local` or a service-role key. Apply the SQL migrations in `supabase/migrations/` in order. Configure confirmed Supabase Auth accounts and assign each user a single practice membership before enabling live mode. The app forwards authorized actions to n8n; the n8n workflows must also be installed and independently secured.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+The code enforces dashboard roles and practice scoping, but a deployment still needs hosting, monitoring, backup restore, provider review, a real practice provisioning flow, messaging/phone delivery, and a safe connection or staff handoff to the practice's scheduling software. The exact limits and test results are in the readiness report.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Context for reviewers
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-## Learn More
-
-To learn more, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-- [v0 Documentation](https://v0.app/docs) - learn about v0 and how to use it.
+- Stack: Next.js 16, React 19, TypeScript, Supabase Auth, n8n webhooks.
+- `main` may reflect the older v0 landing page. Review the `codex/dentalos-local-hardening` branch for the current local dashboard until the owner explicitly approves a merge.
+- A GitHub or Vercel preview is a code preview. It does not connect to the local n8n instance and must not be treated as a production deployment.

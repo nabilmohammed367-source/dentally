@@ -1,4 +1,4 @@
-import { DEMO_DATE, providers, uid, type Practice, type Scenario } from './types'
+import { WORK_DATE as DEMO_DATE, providers, uid, type Practice, type Scenario } from './types'
 import { changeStatus, log, saveAppointment } from './operations'
 
 export const scenarios: { id: Scenario; label: string; prompt: string }[] = [
@@ -18,11 +18,11 @@ export function simulate(p: Practice, scenario: Scenario, patientId: string, tim
   const appointment = p.appointments.find(a => a.patientId === patientId && a.date >= DEMO_DATE && a.status === 'Confirmed')
   if (scenario === 'booking' || scenario === 'reschedule') {
     if (scenario === 'reschedule' && !appointment) throw new Error('This patient has no confirmed appointment to reschedule.')
-    const a = scenario === 'reschedule' ? { ...appointment!, time } : { id: uid(), patientId, date: DEMO_DATE, time, duration: 30, provider: providers[0], chair: 'Chair 1', treatment: 'Routine check-up', status: 'Confirmed' as const, source: agent.name }
-    saveAppointment(p, { ...a, source: agent.name }); reply = `Confirmed in the demo calendar: ${a.treatment} on ${a.date} at ${a.time}, ${p.timezone}, with ${a.provider}. Your explicit confirmation was recorded through the scenario form.`
+    const a = scenario === 'reschedule' ? { ...appointment!, time } : { id: uid(), patientId, date: DEMO_DATE, time, duration: 30, provider: providers[0], chair: 'Chair 1', treatment: 'Check-up', status: 'Confirmed' as const, source: agent.name }
+    saveAppointment(p, { ...a, source: agent.name }); reply = `Confirmed: ${a.treatment} on ${a.date} at ${a.time}, ${p.timezone}, with ${a.provider}. Your explicit confirmation was recorded through the scenario form.`
   } else if (scenario === 'cancellation') {
     if (!appointment) throw new Error('This patient has no confirmed appointment to cancel.')
-    changeStatus(p, appointment.id, 'Cancelled'); reply = 'Your selected appointment has been cancelled in the demo calendar, following your confirmation.'
+    changeStatus(p, appointment.id, 'Cancelled'); reply = 'Your selected appointment has been cancelled, following your confirmation.'
   } else if (scenario === 'optout') {
     patient.consent = false; reply = 'Your communication preference has been updated. Future reminder and outreach simulations will skip you.'
   } else if (scenario === 'urgent') {

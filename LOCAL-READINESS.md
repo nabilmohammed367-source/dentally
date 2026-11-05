@@ -1,9 +1,10 @@
-# DentalOS local demo — 1 November 2026
+# DentalOS local demo — 5 November 2026
 
 Status: usable for supervised demonstrations with synthetic records. **Not approved for real-patient operation or unattended practice use.** No paid hosting was purchased; the owner chose to keep demonstrations local.
 
 ## Update — 5 November 2026, before the client meeting
 
+- The previously exposed n8n webhook key was rotated using n8n's credential import command. A read-only availability request with the new key returned 200; the old key returned 403. Both the dashboard and voice project's local settings now use the new key. The dashboard restarted and its server-side connection check returned the assigned Utrecht practice. A first rotation attempt rolled back because the check ran before n8n had activated its webhooks; the retry waited for activation and succeeded. The fresh private backup is `.codex-backup/local-demo-2026-11-05-post-rotation/`. No key value was printed or committed.
 - The local dashboard and n8n both responded. The dashboard loaded the Utrecht practice after a fresh browser reload. All 18 dashboard policy tests passed again.
 - A private online SQLite backup of the local n8n database and its matching encryption config was saved at `.codex-backup/local-demo-2026-11-05-post-status/` after the workflow fixes and demo appointment. File permissions are restricted to the Mac owner. A separate temporary restore passed SQLite integrity and row-count checks. This is a local recovery copy, not an offsite backup or a production backup program.
 - `start-local-demo.command` was added to the running app folder and tested against the already-running services. It checks both local services and can start them after a reboot. Its cold-start branch has not been exercised end to end. Double-click it before the meeting, then sign in at `http://127.0.0.1:3001/`.
@@ -29,14 +30,14 @@ The client meeting is a screen-shared product demonstration. The Zoom link is se
 
 ## Verification and its limits
 
-- 18 dashboard policy/service test groups passed, including cross-practice records, roles, malformed input, approval IDs, appointment conflicts and request-size limits.
+- 20 dashboard policy/service test groups passed, including cross-practice records, roles, malformed input, approval IDs, appointment conflicts, visit-status timing and request-size limits.
 - The initial workflow hardening passed 1,022 structural and synthetic assertions. These are **not** 1,022 end-to-end tests.
 - Inbox workflow candidates passed 62 synthetic/structural checks; registration candidates passed eight checks.
 - 18 live booking checks passed: registration, booking, rescheduling, cancellation, duplicate refusal, concurrent booking refusal, and unchanged snapshots for the other two practices.
 - 14 live inbox checks passed: both authors persisted, selected conversation routing, staff takeover/note/resolution, foreign conversation refusal, and unchanged snapshots for the other two practices.
 - Additional live checks verified paused Ava/Milo made no appointment or conversation changes; their original enabled states were restored. Leo produced Monday's briefing. Finn prepared one pending waitlist approval and did not duplicate it on retry. Only that test-created approval was rejected afterward.
-- Luna had no new eligible reminders/recalls in the tested live data. Repeating both requests created no duplicate approvals. This does not prove positive message preparation for a newly eligible recipient.
-- Iris had no eligible completed visit. Its positive follow-up path was not exercised by this live run.
+- Luna prepared one reminder for a newly eligible synthetic Rotterdam patient. A repeat created no duplicate approval. A positive recall run remains unverified in the live practice data.
+- Iris's selection and old/future-visit refusal checks passed. Its positive follow-up path for a recent completed visit remains unverified.
 - Browser checks verified sign-in, persistence across reload, patient registration with consent off, booking, native-keyboard rescheduling, cancellation, and persisted inbox history. Browser automation's date/time `fill` method did not update the controlled fields reliably; native keyboard input did. No date-picker code was changed on that basis.
 - Five HTTP access checks passed: signed-out page redirect, rejected store/action requests, blocked cross-origin action, and GET refusal on sign-out. Mobile inbox layout had no horizontal page overflow at 390 px; navigation worked and the original viewport was restored.
 - Production build and TypeScript checks passed.
@@ -57,12 +58,12 @@ The checked-out dashboard runs with npm; starting it does not involve v0. Keep `
 ## Still required before a real-patient pilot
 
 - Persistent online hosting with HTTPS, monitoring, backup and a demonstrated restore. No hosting was provisioned in this session.
-- Confirmed rotation of the previously exposed webhook key and review of any other exposed tokens. This session did not rotate credentials.
+- Review other previously exposed tokens and rotate them if needed. The dashboard/n8n webhook key has been rotated locally; this does not cover third-party provider keys.
 - A provisioned, isolated real practice. Several n8n request validators still accept only the three synthetic practice IDs. Adding a Supabase membership alone does not provision a real practice.
 - End-to-end role tests with separate staff/admin accounts, plus a production authentication/email setup review. The role tests here used controlled service fixtures, not separately signed-in staff accounts.
 - Phone/WhatsApp/SMS provider setup, consent and delivery-state handling, plus real delivery/receipt tests. The current saved inbox messages are explicitly test records.
 - Ava voice testing, the patient acceptance step for waitlist offers, and a reviewed integration or explicit staff handoff to the practice's actual scheduling system.
-- Positive eligible-recipient tests for Luna and Iris, including retries, approval changes and failures.
+- Positive live recall and recent-visit Iris tests, including retries, approval changes and failures. Luna's positive reminder and retry were tested with synthetic records.
 - Appropriate practice onboarding agreements and privacy/security review for the actual providers and data flows. EU hosting alone does not establish readiness.
 
 ## Hosting research — current decision is €0/local

@@ -13,5 +13,5 @@ export default async function Page() {
     if (access.status === 'signed_out') redirect('/login')
     redirect('/pending-access')
   }
-  return <DentalApp userEmail={access.email} />
+  return <DentalApp userEmail={access.email} accountRole={access.role} canManage={access.role === 'owner' || access.role === 'admin'} />
 }

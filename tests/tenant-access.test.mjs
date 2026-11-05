@@ -159,6 +159,25 @@ test('closed appointments and completed approvals cannot be processed again', as
   assert.equal(t.calls.every(c => c.action === 'availability'), true)
 })
 
+test('future appointments cannot be marked arrived or completed', async () => {
+  for (const [current, next] of [['Confirmed', 'Arrived'], ['Arrived', 'Completed']]) {
+    const t = transport(s => { s.practices[0].appointments[0].status = current })
+    const reply = await runDentalAction(request('state', 'status', { id: 'appointment_practice_a', status: next }), access, ['practice_a'], t.call, now)
+    assert.equal(reply.status, 409)
+    assert.equal(t.calls.filter(call => call.workflow === 'state').length, 0)
+  }
+})
+
+test('a visit may progress after it starts in practice time', async () => {
+  const t = transport(s => { s.practices[0].appointments[0].date = '2026-11-02' })
+  const afterStart = new Date('2026-11-02T09:30:00Z')
+  const arrived = await runDentalAction(request('state', 'status', { id: 'appointment_practice_a', status: 'Arrived' }), access, ['practice_a'], t.call, afterStart)
+  assert.equal(arrived.status, 200)
+  t.store.practices[0].appointments[0].status = 'Arrived'
+  const completed = await runDentalAction(request('state', 'status', { id: 'appointment_practice_a', status: 'Completed' }), access, ['practice_a'], t.call, afterStart)
+  assert.equal(completed.status, 200)
+})
+
 test('unimplemented recipe toggles and inherited object properties are rejected', async () => {
   const t = transport()
   for (const input of [request('state', 'recipe', { id: 'recall', enabled: false }), request('ava', 'constructor', {}), request('ava', '__proto__', {}), request('__proto__', 'toString', {})]) {

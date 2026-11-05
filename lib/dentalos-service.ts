@@ -87,6 +87,9 @@ export function recordError(p: Practice, workflow: string, action: string, paylo
       const a = p.appointments.find(x => x.id === payload.id)
       if (!a) return 'That appointment is not available at this practice.'
       if (!((a.status === 'Confirmed' && payload.status === 'Arrived') || (a.status === 'Arrived' && payload.status === 'Completed'))) return 'That status change is not available. Use the appointment cancellation action to cancel a visit.'
+      let today
+      try { today = localDate(now, p.timezone) } catch { return 'The practice timezone needs to be configured.' }
+      if (a.date > today.date || (payload.status === 'Completed' && a.date === today.date && minutes(a.time) > today.minutes)) return 'This visit has not happened yet.'
     }
   }
   if (workflow === 'ava' && action === 'register-patient') {

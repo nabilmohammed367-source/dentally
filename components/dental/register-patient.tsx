@@ -28,7 +28,7 @@ export function RegisterPatientDialog({ onClose }: { onClose: () => void }) {
     <form onSubmit={e => { e.preventDefault(); void save() }}><FieldGroup>
       <Field><FieldLabel htmlFor="new-patient-name">Full name</FieldLabel><Input id="new-patient-name" autoComplete="off" required minLength={2} maxLength={160} value={name} onChange={e => setName(e.target.value)} disabled={busy} /></Field>
       <Field><FieldLabel htmlFor="new-patient-phone">Phone number</FieldLabel><Input id="new-patient-phone" type="tel" autoComplete="off" required minLength={5} maxLength={40} value={phone} onChange={e => setPhone(e.target.value)} disabled={busy} /></Field>
-      <p className="text-sm text-muted-foreground">Reminders and outreach start disabled. Enable them in the patient profile only after recording the patient&apos;s permission.</p>
+      <p className="text-sm text-muted-foreground">Appointment reminders and recall outreach start disabled. The patient profile can change appointment reminders only; recall permission must be handled separately.</p>
       {live && <p className="notice">This workspace is still for synthetic test patients. Do not enter real patient information.</p>}
       <div className="flex justify-end gap-2"><Button type="button" variant="outline" onClick={onClose}>Close</Button><Button type="submit" disabled={busy || name.trim().length < 2 || phone.trim().length < 5}>{busy ? 'Saving…' : 'Register patient'}</Button></div>
     </FieldGroup></form>

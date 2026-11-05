@@ -2,6 +2,18 @@
 
 Status: usable for supervised demonstrations with synthetic records. **Not approved for real-patient operation or unattended practice use.** No paid hosting was purchased; the owner chose to keep demonstrations local.
 
+## Update — 5 November 2026, before the client meeting
+
+- The local dashboard and n8n both responded. The dashboard loaded the Utrecht practice after a fresh browser reload. All 18 dashboard policy tests passed again.
+- A private online SQLite backup of the local n8n database and its matching encryption config was saved at `.codex-backup/local-demo-2026-11-05-post-iris/`. File permissions are restricted to the Mac owner. A separate temporary restore passed SQLite integrity and row-count checks. This is a local recovery copy, not an offsite backup or a production backup program.
+- `start-local-demo.command` was added to the running app folder and tested against the already-running services. It checks both local services and can start them after a reboot. Its cold-start branch has not been exercised end to end. Double-click it before the meeting, then sign in at `http://127.0.0.1:3001/`.
+- A synthetic patient in the Rotterdam seed practice opted in, received one **prepared** Dutch Luna reminder approval, and did not receive a duplicate on retry. The test approval was rejected. No external message was delivered.
+- A live Iris test exposed a real issue: the bridge chose an unsent appointment from 7 October instead of a fresh one, and described an internally saved follow-up as "sent." The test changed only synthetic Rotterdam records. The published Iris core and bridge now require a completed visit that ended within the past 72 hours; the response and activity description say "prepared," and a new internal test conversation is marked Web rather than WhatsApp. Isolated selection checks passed, the publication left practice table fingerprints unchanged, and a live check confirmed that old and future completed visits are rejected. A **positive recent completed-visit test remains open** because the controlled dashboard will not create a past appointment.
+- Ava's separate voice project now rejects impossible clock minutes and no longer logs full patient input or webhook replies. Eight local tests and Ruff checks passed. No spoken call, LiveKit audio run, phone connection, or cloud simulation was performed. Its starter scenario file is not evidence of DentalOS voice coverage.
+- Test artifacts include one clearly labelled synthetic Rotterdam patient, a future appointment marked Completed solely for the Iris check, and a follow-up entry for an older synthetic Rotterdam visit produced before the fix. Review these QA records before using Rotterdam in a demonstration. Utrecht's demo practice was unchanged by this test.
+
+The client meeting is a screen-shared product demonstration. The Zoom link is separate from DentalOS; a remote client cannot open this Mac's `127.0.0.1` address. Keep real patient information out of the demonstration.
+
 ## What was changed
 
 - Connected the missing Next.js session-refresh entry point. Existing-account login no longer incorrectly enforces the signup password-length rule.
